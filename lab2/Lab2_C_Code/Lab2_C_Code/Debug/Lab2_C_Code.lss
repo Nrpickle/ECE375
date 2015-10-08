@@ -1,0 +1,277 @@
+
+Lab2_C_Code.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .data         00000000  00800100  00800100  000001b2  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  1 .text         0000015e  00000000  00000000  00000054  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  2 .comment      00000030  00000000  00000000  000001b2  2**0
+                  CONTENTS, READONLY
+  3 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  000001e4  2**2
+                  CONTENTS, READONLY
+  4 .debug_aranges 00000020  00000000  00000000  00000220  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  5 .debug_info   000002a4  00000000  00000000  00000240  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_abbrev 000000e5  00000000  00000000  000004e4  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_line   000001b8  00000000  00000000  000005c9  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_frame  00000024  00000000  00000000  00000784  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_str    00000197  00000000  00000000  000007a8  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_loc    00000168  00000000  00000000  0000093f  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 11 .debug_ranges 00000010  00000000  00000000  00000aa7  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	45 c0       	rjmp	.+138    	; 0x8c <__ctors_end>
+   2:	00 00       	nop
+   4:	4b c0       	rjmp	.+150    	; 0x9c <__bad_interrupt>
+   6:	00 00       	nop
+   8:	49 c0       	rjmp	.+146    	; 0x9c <__bad_interrupt>
+   a:	00 00       	nop
+   c:	47 c0       	rjmp	.+142    	; 0x9c <__bad_interrupt>
+   e:	00 00       	nop
+  10:	45 c0       	rjmp	.+138    	; 0x9c <__bad_interrupt>
+  12:	00 00       	nop
+  14:	43 c0       	rjmp	.+134    	; 0x9c <__bad_interrupt>
+  16:	00 00       	nop
+  18:	41 c0       	rjmp	.+130    	; 0x9c <__bad_interrupt>
+  1a:	00 00       	nop
+  1c:	3f c0       	rjmp	.+126    	; 0x9c <__bad_interrupt>
+  1e:	00 00       	nop
+  20:	3d c0       	rjmp	.+122    	; 0x9c <__bad_interrupt>
+  22:	00 00       	nop
+  24:	3b c0       	rjmp	.+118    	; 0x9c <__bad_interrupt>
+  26:	00 00       	nop
+  28:	39 c0       	rjmp	.+114    	; 0x9c <__bad_interrupt>
+  2a:	00 00       	nop
+  2c:	37 c0       	rjmp	.+110    	; 0x9c <__bad_interrupt>
+  2e:	00 00       	nop
+  30:	35 c0       	rjmp	.+106    	; 0x9c <__bad_interrupt>
+  32:	00 00       	nop
+  34:	33 c0       	rjmp	.+102    	; 0x9c <__bad_interrupt>
+  36:	00 00       	nop
+  38:	31 c0       	rjmp	.+98     	; 0x9c <__bad_interrupt>
+  3a:	00 00       	nop
+  3c:	2f c0       	rjmp	.+94     	; 0x9c <__bad_interrupt>
+  3e:	00 00       	nop
+  40:	2d c0       	rjmp	.+90     	; 0x9c <__bad_interrupt>
+  42:	00 00       	nop
+  44:	2b c0       	rjmp	.+86     	; 0x9c <__bad_interrupt>
+  46:	00 00       	nop
+  48:	29 c0       	rjmp	.+82     	; 0x9c <__bad_interrupt>
+  4a:	00 00       	nop
+  4c:	27 c0       	rjmp	.+78     	; 0x9c <__bad_interrupt>
+  4e:	00 00       	nop
+  50:	25 c0       	rjmp	.+74     	; 0x9c <__bad_interrupt>
+  52:	00 00       	nop
+  54:	23 c0       	rjmp	.+70     	; 0x9c <__bad_interrupt>
+  56:	00 00       	nop
+  58:	21 c0       	rjmp	.+66     	; 0x9c <__bad_interrupt>
+  5a:	00 00       	nop
+  5c:	1f c0       	rjmp	.+62     	; 0x9c <__bad_interrupt>
+  5e:	00 00       	nop
+  60:	1d c0       	rjmp	.+58     	; 0x9c <__bad_interrupt>
+  62:	00 00       	nop
+  64:	1b c0       	rjmp	.+54     	; 0x9c <__bad_interrupt>
+  66:	00 00       	nop
+  68:	19 c0       	rjmp	.+50     	; 0x9c <__bad_interrupt>
+  6a:	00 00       	nop
+  6c:	17 c0       	rjmp	.+46     	; 0x9c <__bad_interrupt>
+  6e:	00 00       	nop
+  70:	15 c0       	rjmp	.+42     	; 0x9c <__bad_interrupt>
+  72:	00 00       	nop
+  74:	13 c0       	rjmp	.+38     	; 0x9c <__bad_interrupt>
+  76:	00 00       	nop
+  78:	11 c0       	rjmp	.+34     	; 0x9c <__bad_interrupt>
+  7a:	00 00       	nop
+  7c:	0f c0       	rjmp	.+30     	; 0x9c <__bad_interrupt>
+  7e:	00 00       	nop
+  80:	0d c0       	rjmp	.+26     	; 0x9c <__bad_interrupt>
+  82:	00 00       	nop
+  84:	0b c0       	rjmp	.+22     	; 0x9c <__bad_interrupt>
+  86:	00 00       	nop
+  88:	09 c0       	rjmp	.+18     	; 0x9c <__bad_interrupt>
+	...
+
+0000008c <__ctors_end>:
+  8c:	11 24       	eor	r1, r1
+  8e:	1f be       	out	0x3f, r1	; 63
+  90:	cf ef       	ldi	r28, 0xFF	; 255
+  92:	d0 e1       	ldi	r29, 0x10	; 16
+  94:	de bf       	out	0x3e, r29	; 62
+  96:	cd bf       	out	0x3d, r28	; 61
+  98:	02 d0       	rcall	.+4      	; 0x9e <main>
+  9a:	5f c0       	rjmp	.+190    	; 0x15a <_exit>
+
+0000009c <__bad_interrupt>:
+  9c:	b1 cf       	rjmp	.-158    	; 0x0 <__vectors>
+
+0000009e <main>:
+
+
+int main(void)
+{
+
+DDRB =  0b11110000;  //Set the upper nibble to outputs to drive the motors
+  9e:	80 ef       	ldi	r24, 0xF0	; 240
+  a0:	87 bb       	out	0x17, r24	; 23
+DDRD =  0b00000000;  //Set bits 0, 1, and 2 to inputs
+  a2:	11 ba       	out	0x11, r1	; 17
+PORTB = 0b11110000;  //Set the default state of the motors
+  a4:	88 bb       	out	0x18, r24	; 24
+
+    /* Replace with your application code */
+    while (1) 
+    {
+		MOVE_FORWARD();
+  a6:	80 e6       	ldi	r24, 0x60	; 96
+		}
+		else if (CHECK_RIGHT_WHISKER()){  //Check for right whisker
+			_delay_ms(300);
+			MOVE_REVERSE();
+			_delay_ms(300);
+			ROTATE_RIGHT();
+  a8:	20 e4       	ldi	r18, 0x40	; 64
+		}
+		else if (CHECK_LEFT_WHISKER()){  //Check for left whisker
+			_delay_ms(300);
+			MOVE_REVERSE();
+			_delay_ms(300);
+			ROTATE_LEFT();
+  aa:	90 e2       	ldi	r25, 0x20	; 32
+PORTB = 0b11110000;  //Set the default state of the motors
+
+    /* Replace with your application code */
+    while (1) 
+    {
+		MOVE_FORWARD();
+  ac:	88 bb       	out	0x18, r24	; 24
+		else {
+			MOVE_REVERSE();
+		}
+		*/
+		
+		if (CHECK_BOTH_WHISKERS()) {
+  ae:	82 99       	sbic	0x10, 2	; 16
+  b0:	14 c0       	rjmp	.+40     	; 0xda <main+0x3c>
+	#else
+		//round up by default
+		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
+	#endif
+
+	__builtin_avr_delay_cycles(__ticks_dc);
+  b2:	3f ef       	ldi	r19, 0xFF	; 255
+  b4:	45 ea       	ldi	r20, 0xA5	; 165
+  b6:	5e e0       	ldi	r21, 0x0E	; 14
+  b8:	31 50       	subi	r19, 0x01	; 1
+  ba:	40 40       	sbci	r20, 0x00	; 0
+  bc:	50 40       	sbci	r21, 0x00	; 0
+  be:	e1 f7       	brne	.-8      	; 0xb8 <main+0x1a>
+  c0:	00 c0       	rjmp	.+0      	; 0xc2 <main+0x24>
+  c2:	00 00       	nop
+			_delay_ms(300);
+			MOVE_REVERSE();
+  c4:	18 ba       	out	0x18, r1	; 24
+  c6:	3f ef       	ldi	r19, 0xFF	; 255
+  c8:	43 ed       	ldi	r20, 0xD3	; 211
+  ca:	50 e3       	ldi	r21, 0x30	; 48
+  cc:	31 50       	subi	r19, 0x01	; 1
+  ce:	40 40       	sbci	r20, 0x00	; 0
+  d0:	50 40       	sbci	r21, 0x00	; 0
+  d2:	e1 f7       	brne	.-8      	; 0xcc <main+0x2e>
+  d4:	00 c0       	rjmp	.+0      	; 0xd6 <main+0x38>
+  d6:	00 00       	nop
+  d8:	e9 cf       	rjmp	.-46     	; 0xac <main+0xe>
+			_delay_ms(1000);
+		}
+		else if (CHECK_LEFT_WHISKER()){  //Check for left whisker
+  da:	81 99       	sbic	0x10, 1	; 16
+  dc:	1e c0       	rjmp	.+60     	; 0x11a <main+0x7c>
+  de:	3f ef       	ldi	r19, 0xFF	; 255
+  e0:	45 ea       	ldi	r20, 0xA5	; 165
+  e2:	5e e0       	ldi	r21, 0x0E	; 14
+  e4:	31 50       	subi	r19, 0x01	; 1
+  e6:	40 40       	sbci	r20, 0x00	; 0
+  e8:	50 40       	sbci	r21, 0x00	; 0
+  ea:	e1 f7       	brne	.-8      	; 0xe4 <main+0x46>
+  ec:	00 c0       	rjmp	.+0      	; 0xee <main+0x50>
+  ee:	00 00       	nop
+			_delay_ms(300);
+			MOVE_REVERSE();
+  f0:	18 ba       	out	0x18, r1	; 24
+  f2:	3f ef       	ldi	r19, 0xFF	; 255
+  f4:	45 ea       	ldi	r20, 0xA5	; 165
+  f6:	5e e0       	ldi	r21, 0x0E	; 14
+  f8:	31 50       	subi	r19, 0x01	; 1
+  fa:	40 40       	sbci	r20, 0x00	; 0
+  fc:	50 40       	sbci	r21, 0x00	; 0
+  fe:	e1 f7       	brne	.-8      	; 0xf8 <main+0x5a>
+ 100:	00 c0       	rjmp	.+0      	; 0x102 <main+0x64>
+ 102:	00 00       	nop
+			_delay_ms(300);
+			ROTATE_LEFT();
+ 104:	98 bb       	out	0x18, r25	; 24
+ 106:	3f ef       	ldi	r19, 0xFF	; 255
+ 108:	49 e6       	ldi	r20, 0x69	; 105
+ 10a:	58 e1       	ldi	r21, 0x18	; 24
+ 10c:	31 50       	subi	r19, 0x01	; 1
+ 10e:	40 40       	sbci	r20, 0x00	; 0
+ 110:	50 40       	sbci	r21, 0x00	; 0
+ 112:	e1 f7       	brne	.-8      	; 0x10c <main+0x6e>
+ 114:	00 c0       	rjmp	.+0      	; 0x116 <main+0x78>
+ 116:	00 00       	nop
+ 118:	c9 cf       	rjmp	.-110    	; 0xac <main+0xe>
+			_delay_ms(500);
+		}
+		else if (CHECK_RIGHT_WHISKER()){  //Check for right whisker
+ 11a:	80 99       	sbic	0x10, 0	; 16
+ 11c:	c7 cf       	rjmp	.-114    	; 0xac <main+0xe>
+ 11e:	3f ef       	ldi	r19, 0xFF	; 255
+ 120:	45 ea       	ldi	r20, 0xA5	; 165
+ 122:	5e e0       	ldi	r21, 0x0E	; 14
+ 124:	31 50       	subi	r19, 0x01	; 1
+ 126:	40 40       	sbci	r20, 0x00	; 0
+ 128:	50 40       	sbci	r21, 0x00	; 0
+ 12a:	e1 f7       	brne	.-8      	; 0x124 <main+0x86>
+ 12c:	00 c0       	rjmp	.+0      	; 0x12e <main+0x90>
+ 12e:	00 00       	nop
+			_delay_ms(300);
+			MOVE_REVERSE();
+ 130:	18 ba       	out	0x18, r1	; 24
+ 132:	3f ef       	ldi	r19, 0xFF	; 255
+ 134:	45 ea       	ldi	r20, 0xA5	; 165
+ 136:	5e e0       	ldi	r21, 0x0E	; 14
+ 138:	31 50       	subi	r19, 0x01	; 1
+ 13a:	40 40       	sbci	r20, 0x00	; 0
+ 13c:	50 40       	sbci	r21, 0x00	; 0
+ 13e:	e1 f7       	brne	.-8      	; 0x138 <main+0x9a>
+ 140:	00 c0       	rjmp	.+0      	; 0x142 <main+0xa4>
+ 142:	00 00       	nop
+			_delay_ms(300);
+			ROTATE_RIGHT();
+ 144:	28 bb       	out	0x18, r18	; 24
+ 146:	3f ef       	ldi	r19, 0xFF	; 255
+ 148:	49 e6       	ldi	r20, 0x69	; 105
+ 14a:	58 e1       	ldi	r21, 0x18	; 24
+ 14c:	31 50       	subi	r19, 0x01	; 1
+ 14e:	40 40       	sbci	r20, 0x00	; 0
+ 150:	50 40       	sbci	r21, 0x00	; 0
+ 152:	e1 f7       	brne	.-8      	; 0x14c <main+0xae>
+ 154:	00 c0       	rjmp	.+0      	; 0x156 <main+0xb8>
+ 156:	00 00       	nop
+ 158:	a9 cf       	rjmp	.-174    	; 0xac <main+0xe>
+
+0000015a <_exit>:
+ 15a:	f8 94       	cli
+
+0000015c <__stop_program>:
+ 15c:	ff cf       	rjmp	.-2      	; 0x15c <__stop_program>
