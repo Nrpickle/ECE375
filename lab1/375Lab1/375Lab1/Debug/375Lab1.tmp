@@ -1,0 +1,36 @@
+<ASSEMBLER_INFO>
+ <VERSION>2.1.57</VERSION>
+ <DEVICE>"ATmega128"</DEVICE>
+ <WORKING_DIR>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab1\375Lab1\375Lab1\Debug</WORKING_DIR>
+ <INCLUDE_PATH>
+  <DIR>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\avrasm\inc</DIR>
+  <DIR>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\avrasm\inc</DIR>
+  <DIR>C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avrassembler\Include</DIR>
+  <DIR></DIR>
+ </INCLUDE_PATH>
+ <SOURCE_FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab1\375Lab1\375Lab1\main.asm</SOURCE_FILE>
+ <INCLUDED_FILES>
+  <FILE>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\avrasm\inc\m128def.inc</FILE>
+ </INCLUDED_FILES>
+ <OBJECT_FILES>
+  <FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab1\375Lab1\375Lab1\Debug\375Lab1.obj</FILE>
+ </OBJECT_FILES>
+ <HEX_FILES>
+  <FILE>375Lab1.hex</FILE>
+ </HEX_FILES>
+ <OUTPUT_FILES>
+  <FILE>375Lab1.map</FILE>
+  <FILE>375Lab1.lss</FILE>
+ </OUTPUT_FILES>
+ <LABELS>
+  <INIT><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab1\375Lab1\375Lab1\main.asm</FILE><LINE>101</LINE></INIT>
+  <MAIN><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab1\375Lab1\375Lab1\main.asm</FILE><LINE>127</LINE></MAIN>
+  <NEXT><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab1\375Lab1\375Lab1\main.asm</FILE><LINE>134</LINE></NEXT>
+  <HitRight><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab1\375Lab1\375Lab1\main.asm</FILE><LINE>148</LINE></HitRight>
+  <HitLeft><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab1\375Lab1\375Lab1\main.asm</FILE><LINE>183</LINE></HitLeft>
+  <Wait><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab1\375Lab1\375Lab1\main.asm</FILE><LINE>222</LINE></Wait>
+  <Loop><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab1\375Lab1\375Lab1\main.asm</FILE><LINE>227</LINE></Loop>
+  <OLoop><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab1\375Lab1\375Lab1\main.asm</FILE><LINE>228</LINE></OLoop>
+  <ILoop><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab1\375Lab1\375Lab1\main.asm</FILE><LINE>229</LINE></ILoop>
+ </LABELS>
+</ASSEMBLER_INFO>
