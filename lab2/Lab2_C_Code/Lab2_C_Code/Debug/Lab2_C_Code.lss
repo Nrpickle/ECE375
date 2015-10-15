@@ -182,8 +182,8 @@ PORTB = 0b11110000;  //Set the default state of the motors
 			MOVE_REVERSE();
   c4:	18 ba       	out	0x18, r1	; 24
   c6:	3f ef       	ldi	r19, 0xFF	; 255
-  c8:	43 ed       	ldi	r20, 0xD3	; 211
-  ca:	50 e3       	ldi	r21, 0x30	; 48
+  c8:	45 ea       	ldi	r20, 0xA5	; 165
+  ca:	5e e0       	ldi	r21, 0x0E	; 14
   cc:	31 50       	subi	r19, 0x01	; 1
   ce:	40 40       	sbci	r20, 0x00	; 0
   d0:	50 40       	sbci	r21, 0x00	; 0
@@ -191,7 +191,7 @@ PORTB = 0b11110000;  //Set the default state of the motors
   d4:	00 c0       	rjmp	.+0      	; 0xd6 <main+0x38>
   d6:	00 00       	nop
   d8:	e9 cf       	rjmp	.-46     	; 0xac <main+0xe>
-			_delay_ms(1000);
+			_delay_ms(300);
 		}
 		else if (CHECK_LEFT_WHISKER()){  //Check for left whisker
   da:	81 99       	sbic	0x10, 1	; 16

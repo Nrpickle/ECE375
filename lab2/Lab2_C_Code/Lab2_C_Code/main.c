@@ -53,7 +53,7 @@ PORTB = 0b11110000;  //Set the default state of the motors
 		if (CHECK_BOTH_WHISKERS()) {
 			_delay_ms(300);
 			MOVE_REVERSE();
-			_delay_ms(1000);
+			_delay_ms(300);
 		}
 		else if (CHECK_LEFT_WHISKER()){  //Check for left whisker
 			_delay_ms(300);
