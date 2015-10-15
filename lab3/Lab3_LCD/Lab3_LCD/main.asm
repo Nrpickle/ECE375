@@ -65,10 +65,17 @@ string_lp:
 		BRNE	string_lp   ;if counter is not equal to 0, then goto string_lp
 
 		;Load the second string (2nd line) into program memory
-		LDI		ZL, LOW(ROBOT_STRING<<1)  ;Load Z Pointer Address
+		LDI		ZL, LOW(ROBOT_STRING<<1)  ;Load Z Pointer Address (2nd string)
 		LDI		ZH, HIGH(ROBOT_STRING<<1) ;
-		LDI		YL, LOW(LCDLn2Addr)
+		LDI		YL, LOW(LCDLn2Addr)       ;Load Y pointer (LCD Line 2)
 		LDI		YH, HIGH(LCDLn2Addr)
+
+		LDI		mpr2, 15    ;Put 15 into the mpr2
+string_lp_2:
+		LPM		mpr, Z+     ;Get the character from memory, post inc
+		st		Y+, mpr     ;Store the character to the lcd prep space
+		DEC		mpr2        ;dec counter var
+		BRNE	string_lp_2   ;if counter is not equal to 0, then goto string_lp
 
 
 ;-----------------------------------------------------------
@@ -77,6 +84,7 @@ string_lp:
 MAIN:							; The Main program
 		; Display the strings on the LCD Display
 		RCALL LCDWrLn1
+		RCALL LCDWrLn2
 								; An RCALL statement
 		
 		rjmp	MAIN			; jump back to main and create an infinite

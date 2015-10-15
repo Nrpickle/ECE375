@@ -26,20 +26,21 @@
  <LABELS>
   <INIT><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab3\Lab3_LCD\Lab3_LCD\main.asm</FILE><LINE>41</LINE></INIT>
   <LCDInit><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab3\Lab3_LCD\Lab3_LCD\LCDDriver.asm</FILE><LINE>75</LINE></LCDInit>
-  <STRING_BEG><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab3\Lab3_LCD\Lab3_LCD\main.asm</FILE><LINE>113</LINE></STRING_BEG>
+  <STRING_BEG><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab3\Lab3_LCD\Lab3_LCD\main.asm</FILE><LINE>121</LINE></STRING_BEG>
   <string_lp><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab3\Lab3_LCD\Lab3_LCD\main.asm</FILE><LINE>61</LINE></string_lp>
-  <ROBOT_STRING><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab3\Lab3_LCD\Lab3_LCD\main.asm</FILE><LINE>117</LINE></ROBOT_STRING>
-  <MAIN><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab3\Lab3_LCD\Lab3_LCD\main.asm</FILE><LINE>77</LINE></MAIN>
+  <ROBOT_STRING><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab3\Lab3_LCD\Lab3_LCD\main.asm</FILE><LINE>125</LINE></ROBOT_STRING>
+  <string_lp_2><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab3\Lab3_LCD\Lab3_LCD\main.asm</FILE><LINE>74</LINE></string_lp_2>
+  <MAIN><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab3\Lab3_LCD\Lab3_LCD\main.asm</FILE><LINE>84</LINE></MAIN>
   <LCDWrLn1><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab3\Lab3_LCD\Lab3_LCD\LCDDriver.asm</FILE><LINE>180</LINE></LCDWrLn1>
-  <FUNC><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab3\Lab3_LCD\Lab3_LCD\main.asm</FILE><LINE>96</LINE></FUNC>
-  <STRING_END><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab3\Lab3_LCD\Lab3_LCD\main.asm</FILE><LINE>115</LINE></STRING_END>
-  <ROBOT_END><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab3\Lab3_LCD\Lab3_LCD\main.asm</FILE><LINE>119</LINE></ROBOT_END>
+  <LCDWrLn2><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab3\Lab3_LCD\Lab3_LCD\LCDDriver.asm</FILE><LINE>205</LINE></LCDWrLn2>
+  <FUNC><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab3\Lab3_LCD\Lab3_LCD\main.asm</FILE><LINE>104</LINE></FUNC>
+  <STRING_END><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab3\Lab3_LCD\Lab3_LCD\main.asm</FILE><LINE>123</LINE></STRING_END>
+  <ROBOT_END><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab3\Lab3_LCD\Lab3_LCD\main.asm</FILE><LINE>127</LINE></ROBOT_END>
   <LCDINIT_L1><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab3\Lab3_LCD\Lab3_LCD\LCDDriver.asm</FILE><LINE>139</LINE></LCDINIT_L1>
   <LCDWait><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab3\Lab3_LCD\Lab3_LCD\LCDDriver.asm</FILE><LINE>492</LINE></LCDWait>
   <LCDWriteCmd><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab3\Lab3_LCD\Lab3_LCD\LCDDriver.asm</FILE><LINE>436</LINE></LCDWriteCmd>
   <LCDClr><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab3\Lab3_LCD\Lab3_LCD\LCDDriver.asm</FILE><LINE>230</LINE></LCDClr>
   <LCDWrite><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab3\Lab3_LCD\Lab3_LCD\LCDDriver.asm</FILE><LINE>170</LINE></LCDWrite>
-  <LCDWrLn2><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab3\Lab3_LCD\Lab3_LCD\LCDDriver.asm</FILE><LINE>205</LINE></LCDWrLn2>
   <LCDSetLine><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab3\Lab3_LCD\Lab3_LCD\LCDDriver.asm</FILE><LINE>388</LINE></LCDSetLine>
   <LCDWriteLine><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab3\Lab3_LCD\Lab3_LCD\LCDDriver.asm</FILE><LINE>423</LINE></LCDWriteLine>
   <LCDClrLn1><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab3\Lab3_LCD\Lab3_LCD\LCDDriver.asm</FILE><LINE>240</LINE></LCDClrLn1>
