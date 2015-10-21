@@ -1,15 +1,13 @@
 ;***********************************************************
 ;*
-;*	Enter Name of file here
+;*	Lab 3 main asm file
 ;*
-;*	Enter the description of the program here
-;*
-;*	This is the skeleton file Lab 3 of ECE 375
+;*	Writes characters to an LCD
 ;*
 ;***********************************************************
 ;*
-;*	 Author: Enter your name
-;*	   Date: Enter Date
+;*	 Author: Nick McComb
+;*	   Date: 10/14/2015
 ;*
 ;***********************************************************
 
