@@ -24,15 +24,17 @@
  </OUTPUT_FILES>
  <LABELS>
   <INIT><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab4\Lab4_LargeArithmetic\Lab4_LargeArithmetic\main.asm</FILE><LINE>58</LINE></INIT>
-  <MAIN><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab4\Lab4_LargeArithmetic\Lab4_LargeArithmetic\main.asm</FILE><LINE>70</LINE></MAIN>
-  <ADD16><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab4\Lab4_LargeArithmetic\Lab4_LargeArithmetic\main.asm</FILE><LINE>108</LINE></ADD16>
-  <DONE><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab4\Lab4_LargeArithmetic\Lab4_LargeArithmetic\main.asm</FILE><LINE>95</LINE></DONE>
-  <if_carry><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab4\Lab4_LargeArithmetic\Lab4_LargeArithmetic\main.asm</FILE><LINE>161</LINE></if_carry>
-  <func_end><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab4\Lab4_LargeArithmetic\Lab4_LargeArithmetic\main.asm</FILE><LINE>163</LINE></func_end>
-  <MUL24><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab4\Lab4_LargeArithmetic\Lab4_LargeArithmetic\main.asm</FILE><LINE>189</LINE></MUL24>
-  <MUL16><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab4\Lab4_LargeArithmetic\Lab4_LargeArithmetic\main.asm</FILE><LINE>207</LINE></MUL16>
-  <MUL16_OLOOP><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab4\Lab4_LargeArithmetic\Lab4_LargeArithmetic\main.asm</FILE><LINE>234</LINE></MUL16_OLOOP>
-  <MUL16_ILOOP><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab4\Lab4_LargeArithmetic\Lab4_LargeArithmetic\main.asm</FILE><LINE>241</LINE></MUL16_ILOOP>
-  <FUNC><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab4\Lab4_LargeArithmetic\Lab4_LargeArithmetic\main.asm</FILE><LINE>285</LINE></FUNC>
+  <MAIN><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab4\Lab4_LargeArithmetic\Lab4_LargeArithmetic\main.asm</FILE><LINE>74</LINE></MAIN>
+  <ADD16><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab4\Lab4_LargeArithmetic\Lab4_LargeArithmetic\main.asm</FILE><LINE>139</LINE></ADD16>
+  <MUL24><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab4\Lab4_LargeArithmetic\Lab4_LargeArithmetic\main.asm</FILE><LINE>220</LINE></MUL24>
+  <DONE><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab4\Lab4_LargeArithmetic\Lab4_LargeArithmetic\main.asm</FILE><LINE>126</LINE></DONE>
+  <if_carry><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab4\Lab4_LargeArithmetic\Lab4_LargeArithmetic\main.asm</FILE><LINE>192</LINE></if_carry>
+  <func_end><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab4\Lab4_LargeArithmetic\Lab4_LargeArithmetic\main.asm</FILE><LINE>194</LINE></func_end>
+  <MUL24_OLOOP><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab4\Lab4_LargeArithmetic\Lab4_LargeArithmetic\main.asm</FILE><LINE>247</LINE></MUL24_OLOOP>
+  <MUL24_ILOOP><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab4\Lab4_LargeArithmetic\Lab4_LargeArithmetic\main.asm</FILE><LINE>254</LINE></MUL24_ILOOP>
+  <MUL16><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab4\Lab4_LargeArithmetic\Lab4_LargeArithmetic\main.asm</FILE><LINE>304</LINE></MUL16>
+  <MUL16_OLOOP><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab4\Lab4_LargeArithmetic\Lab4_LargeArithmetic\main.asm</FILE><LINE>331</LINE></MUL16_OLOOP>
+  <MUL16_ILOOP><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab4\Lab4_LargeArithmetic\Lab4_LargeArithmetic\main.asm</FILE><LINE>338</LINE></MUL16_ILOOP>
+  <FUNC><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab4\Lab4_LargeArithmetic\Lab4_LargeArithmetic\main.asm</FILE><LINE>382</LINE></FUNC>
  </LABELS>
 </ASSEMBLER_INFO>

@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.1.57  C:\Users\nrpic_000\Documents\GitHub\ECE375\lab4\Lab4_LargeArithmetic\Lab4_LargeArithmetic\main.asm Wed Oct 21 19:56:59 2015
+AVRASM ver. 2.1.57  C:\Users\nrpic_000\Documents\GitHub\ECE375\lab4\Lab4_LargeArithmetic\Lab4_LargeArithmetic\main.asm Wed Nov 04 13:09:33 2015
 
 
 EQU  SIGNATURE_000 0000001e
@@ -877,20 +877,22 @@ DEF  B            r4
 DEF  oloop        r17
 DEF  iloop        r18
 EQU  addrA        00000100
-EQU  addrB        00000102
-EQU  LAddrP       00000104
-EQU  HAddrP       00000109
-EQU  addr_add_A   00000110
-EQU  addr_add_B   00000112
-EQU  addr_add_RESULT 00000114
+EQU  addrB        00000103
+EQU  LAddrP       00000106
+EQU  HAddrP       00000111
+EQU  addr_add_A   00000112
+EQU  addr_add_B   00000114
+EQU  addr_add_RESULT 00000116
 CSEG INIT         00000046
-CSEG MAIN         00000047
-CSEG ADD16        00000056
-CSEG DONE         00000055
-CSEG if_carry     00000077
-CSEG func_end     00000078
-CSEG MUL24        00000087
-CSEG MUL16        00000088
-CSEG MUL16_OLOOP  0000009b
-CSEG MUL16_ILOOP  0000009e
-CSEG FUNC         000000bf
+CSEG MAIN         0000004b
+CSEG ADD16        0000006f
+CSEG MUL24        000000a0
+CSEG DONE         0000006e
+CSEG if_carry     00000090
+CSEG func_end     00000091
+CSEG MUL24_OLOOP  000000b3
+CSEG MUL24_ILOOP  000000b6
+CSEG MUL16        000000d7
+CSEG MUL16_OLOOP  000000ea
+CSEG MUL16_ILOOP  000000ed
+CSEG FUNC         0000010e

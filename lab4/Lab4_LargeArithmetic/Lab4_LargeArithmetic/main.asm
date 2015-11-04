@@ -2,7 +2,7 @@
 ;*
 ;*	main.asm
 ;*
-;*	Enter the description of the program here
+;*	This program contains functions that preform multi-digit arithmetic
 ;*
 ;*	This is the skeleton file Lab 4 of ECE 375
 ;*
@@ -30,13 +30,13 @@
 .def	iloop = r18				; Inner Loop Counter
 
 .equ	addrA = $0100			; Beginning Address of Operand A data
-.equ	addrB = $0102			; Beginning Address of Operand B data
-.equ	LAddrP = $0104			; Beginning Address of Product Result
-.equ	HAddrP = $0109			; End Address of Product Result
+.equ	addrB = $0103			; Beginning Address of Operand B data
+.equ	LAddrP = $0106			; Beginning Address of Product Result
+.equ	HAddrP = $0111			; End Address of Product Result
 
-.equ	addr_add_A = $0110
-.equ    addr_add_B = $0112
-.equ	addr_add_RESULT = $0114
+.equ	addr_add_A = $0112
+.equ    addr_add_B = $0114
+.equ	addr_add_RESULT = $0116
 
 
 ;***********************************************************
@@ -58,6 +58,10 @@
 INIT:							; The initialization routine
 		; Initialize Stack Pointer
 		; TODO					; Init the 2 stack pointer registers
+		LDI		mpr, LOW(RAMEND)  ;Low Byte of End SRAM Address
+		OUT		SPL, mpr		  ;Write byte to SPL
+		LDI		mpr, HIGH(RAMEND) ;High Byte of End SRAM Address
+		OUT		SPH, mpr		  ;Write byte to SPH
 
 		clr		zero			; Set the zero register to zero, maintain
 								; these semantics, meaning, don't load anything
@@ -70,26 +74,53 @@ INIT:							; The initialization routine
 MAIN:							; The Main program
 		; Setup the add funtion
 		; Add the two 16-bit numbers
-		LDI		mpr, 0x01		;LSByte
-
 		LDI		YL, LOW(  addr_add_A)
 		LDI		YH, HIGH( addr_add_A)
+		LDI		mpr, 0xFF		;LSByte
 		ST		Y+, mpr
-		LDI		mpr, 0x00       ;MSByte
+		LDI		mpr, 0xFF       ;MSByte
 		ST		Y, mpr
 
-		LDI		mpr, 0x10       ;LSByte
 		LDI		YL, LOW(  addr_add_B)
 		LDI		YH, HIGH( addr_add_B)
+		LDI		mpr, 0xFF       ;LSByte
 		ST		Y+, mpr	
-		LDI		mpr, 0x00       ;MSByte
-		ST		Y, mpr
+		LDI		mpr, 0xFE       ;MSByte
+ 		ST		Y, mpr
 
 		rcall	ADD16			; Call the add function
+		; The result is now in 0114:0116
+
+		; First operand (result from addition)
+		LDI		YL, LOW(  addrA)
+		LDI		YH, HIGH( addrA)
+		LDI		ZL, LOW(  addr_add_RESULT)
+		LDI		ZH, HIGH( addr_add_RESULT)
+		
+		LD		mpr, Z+
+		ST		Y+, mpr
+		LD		mpr, Z+
+		ST		Y+, mpr
+		LD		mpr, Z
+		ST		Y, mpr
+
+		; Second operand (same as first operand)
+		LDI		YL, LOW(  addrB)
+		LDI		YH, HIGH( addrB)
+		LDI		ZL, LOW(  addr_add_RESULT)
+		LDI		ZH, HIGH( addr_add_RESULT)
+
+		LD		mpr, Z+
+		ST		Y+, mpr
+		LD		mpr, Z+
+		ST		Y+, mpr
+		LD		mpr, Z
+		ST		Y, mpr
+
 		; Setup the multiply function
 
 		; Multiply two 24-bit numbers
-		;rcall	MUL24			; Call the multiply function
+		RCALL	MUL24			; Call the multiply function
 
 		NOP
 DONE:	rjmp	DONE			; Create an infinite while loop to signify the 
@@ -106,7 +137,7 @@ DONE:	rjmp	DONE			; Create an infinite while loop to signify the
 ;		out bit.
 ;-----------------------------------------------------------
 ADD16:
-		; Save variable by pushing them to the stack
+		; Save variables by pushing them to the stack
 		PUSH 	A				; Save A register
 		PUSH	B				; Save B register
 		PUSH	rhi				; Save rhi register
@@ -123,37 +154,37 @@ ADD16:
 
 		;     AH, AL
 		;     BH, BL
-		; R3, RH, RL
+		; RC, RH, RL
 
 		; FIRST BYTE
 		LDI		ZL, LOW(addr_add_A)
 		LDI		ZH, HIGH(addr_add_A)
-		LPM		mpr, Z  ;Put AL into mpr
+		LD		mpr, Z  ;Put AL into mpr
 
 		LDI		ZL, LOW(addr_add_B)
 		LDI		ZH, HIGH(addr_add_B)
-		LPM		mpr2, Z+ ;Put BL into mpr2
+		LD		mpr2, Z+ ;Put BL into mpr2
 
 		ADD		mpr, mpr2  ;Add BL+AL into mpr
 
-		LDI		YL, LOW(addr_add_RESULT)
-		LDI		YH, HIGH(addr_add_RESULT)
+		LDI		YL, LOW(addr_add_RESULT)    ;Load the result location into the Y reg
+		LDI		YH, HIGH(addr_add_RESULT)   ; 
 
-		ST		Y+, mpr ;Store (BL+AL) into RL
+		ST		Y+, mpr ;Store (BL+AL) into RL, Y now points to RH
 
 		; SECOND BYTE
-		LPM		mpr2, Z ;Put BH into mpr2
+		LD		mpr2, Z ;Put BH into mpr2
 
-		LDI		ZL, LOW(addr_add_A)
-		LDI		ZH, HIGH(addr_add_A)
-		INC		ZL
-		LPM		mpr, Z ;Put AH into mpr
+		LDI		ZL, LOW(addr_add_A)   ;Load the first operand
+		LDI		ZH, HIGH(addr_add_A)  ;
+		INC		ZL                    ;Increment to get AH
+		LD		mpr, Z ;Put AH into mpr
 
 		ADC		mpr, mpr2 ;Add AH, BH, and carry -> mpr
 
-		ST		Y+, mpr
+		ST		Y+, mpr   ;Store RH into the result, Y now points to RC
 		
-		;Carry bit
+		; CARRY BIT
 		BRCS	if_carry
 		;If not carry
 		clr		mpr
@@ -161,23 +192,23 @@ ADD16:
 if_carry: ;if carry
 		LDI		mpr, 0x01
 func_end: 
-		ST		Y, mpr ;Store mpr into R3
+		ST		Y, mpr ;Store mpr into RC
 
 
 		; Restore variable by popping them from the stack in reverse order
-		PUSH		iloop			; Restore all registers in reverse order
-		PUSH		oloop
-		PUSH		ZL				
-		PUSH		ZH
-		PUSH		YL
-		PUSH		YH
-		PUSH		XL
-		PUSH		XH
-		PUSH		zero
-		PUSH		rlo
-		PUSH		rhi
-		PUSH		B
-		PUSH		A
+		POP		iloop			; Restore all registers in reverse order
+		POP		oloop
+		POP		ZL				
+		POP		ZH
+		POP		YL
+		POP		YH
+		POP		XL
+		POP		XH
+		POP		zero
+		POP		rlo
+		POP		rhi
+		POP		B
+		POP		A
 
 		ret						; End a function with RET
 
@@ -187,11 +218,77 @@ func_end:
 ;		result.
 ;-----------------------------------------------------------
 MUL24:
-		; Save variable by pushing them to the stack
+		push 	A				; Save A register
+		push	B				; Save B register
+		push	rhi				; Save rhi register
+		push	rlo				; Save rlo register
+		push	zero			; Save zero register
+		push	XH				; Save X-ptr
+		push	XL
+		push	YH				; Save Y-ptr
+		push	YL				
+		push	ZH				; Save Z-ptr
+		push	ZL
+		push	oloop			; Save counters
+		push	iloop				
 
-		; Execute the function here
-		
-		; Restore variable by popping them from the stack in reverse order\
+		clr		zero			; Maintain zero semantics
+
+		; Set Y to beginning address of B
+		ldi		YL, low(addrB)	; Load low byte
+		ldi		YH, high(addrB)	; Load high byte
+
+		; Set Z to begginning address of resulting Product
+		ldi		ZL, low(LAddrP)	; Load low byte
+		ldi		ZH, high(LAddrP); Load high byte
+
+		; Begin outer for loop
+		ldi		oloop, 3		; Load counter
+MUL24_OLOOP:
+		; Set X to beginning address of A
+		ldi		XL, low(addrA)	; Load low byte
+		ldi		XH, high(addrA)	; Load high byte
+
+		; Begin inner for loop
+		ldi		iloop, 3		; Load counter
+MUL24_ILOOP:
+		ld		A, X+			; Get byte of A operand
+		ld		B, Y			; Get byte of B operand
+		mul		A,B				; Multiply A and B
+		ld		A, Z+			; Get a result byte from memory
+		ld		B, Z+			; Get the next result byte from memory
+		add		rlo, A			; rlo <= rlo + A
+		adc		rhi, B			; rhi <= rhi + B + carry
+		ld		A, Z			; Get a third byte from the result
+		adc		A, zero			; Add carry to A
+		st		Z, A			; Store third byte to memory
+		st		-Z, rhi			; Store second byte to memory
+		st		-Z, rlo			; Store third byte to memory
+		adiw	ZH:ZL, 1		; Z <= Z + 1			
+		dec		iloop			; Decrement counter
+		brne	MUL24_ILOOP		; Loop if iLoop != 0
+		; End inner for loop
+
+		sbiw	ZH:ZL, 2		; Z <= Z - 1
+		adiw	YH:YL, 1		; Y <= Y + 1
+		dec		oloop			; Decrement counter
+		brne	MUL24_OLOOP		; Loop if oLoop != 0
+		; End outer for loop
+		 		
+		pop		iloop			; Restore all registers in reverves order
+		pop		oloop
+		pop		ZL				
+		pop		ZH
+		pop		YL
+		pop		YH
+		pop		XL
+		pop		XH
+		pop		zero
+		pop		rlo
+		pop		rhi
+		pop		B
+		pop		A
+
 		ret						; End a function with RET
 
 ;-----------------------------------------------------------

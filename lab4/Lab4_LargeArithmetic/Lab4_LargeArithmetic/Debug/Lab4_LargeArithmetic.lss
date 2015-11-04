@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.1.57  C:\Users\nrpic_000\Documents\GitHub\ECE375\lab4\Lab4_LargeArithmetic\Lab4_LargeArithmetic\main.asm Wed Oct 21 19:56:59 2015
+AVRASM ver. 2.1.57  C:\Users\nrpic_000\Documents\GitHub\ECE375\lab4\Lab4_LargeArithmetic\Lab4_LargeArithmetic\main.asm Wed Nov 04 13:09:33 2015
 
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\avrasm\inc\m128def.inc'
 C:\Users\nrpic_000\Documents\GitHub\ECE375\lab4\Lab4_LargeArithmetic\Lab4_LargeArithmetic\main.asm(16): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\avrasm\inc\m128def.inc'
@@ -1226,7 +1226,7 @@ C:\Users\nrpic_000\Documents\GitHub\ECE375\lab4\Lab4_LargeArithmetic\Lab4_LargeA
                  ;*
                  ;*	main.asm
                  ;*
-                 ;*	Enter the description of the program here
+                 ;*	This program contains functions that preform multi-digit arithmetic
                  ;*
                  ;*	This is the skeleton file Lab 4 of ECE 375
                  ;*
@@ -1297,13 +1297,13 @@ C:\Users\nrpic_000\Documents\GitHub\ECE375\lab4\Lab4_LargeArithmetic\Lab4_LargeA
                  .def	iloop = r18				; Inner Loop Counter
                  
                  .equ	addrA = $0100			; Beginning Address of Operand A data
-                 .equ	addrB = $0102			; Beginning Address of Operand B data
-                 .equ	LAddrP = $0104			; Beginning Address of Product Result
-                 .equ	HAddrP = $0109			; End Address of Product Result
+                 .equ	addrB = $0103			; Beginning Address of Operand B data
+                 .equ	LAddrP = $0106			; Beginning Address of Product Result
+                 .equ	HAddrP = $0111			; End Address of Product Result
                  
-                 .equ	addr_add_A = $0110
-                 .equ    addr_add_B = $0112
-                 .equ	addr_add_RESULT = $0114
+                 .equ	addr_add_A = $0112
+                 .equ    addr_add_B = $0114
+                 .equ	addr_add_RESULT = $0116
                  
                  
                  ;***********************************************************
@@ -1325,8 +1325,12 @@ C:\Users\nrpic_000\Documents\GitHub\ECE375\lab4\Lab4_LargeArithmetic\Lab4_LargeA
                  INIT:							; The initialization routine
                  		; Initialize Stack Pointer
                  		; TODO					; Init the 2 stack pointer registers
+000046 ef0f      		LDI		mpr, LOW(RAMEND)  ;Low Byte of End SRAM Address
+000047 bf0d      		OUT		SPL, mpr		  ;Write byte to SPL
+000048 e100      		LDI		mpr, HIGH(RAMEND) ;High Byte of End SRAM Address
+000049 bf0e      		OUT		SPH, mpr		  ;Write byte to SPH
                  
-000046 2422      		clr		zero			; Set the zero register to zero, maintain
+00004a 2422      		clr		zero			; Set the zero register to zero, maintain
                  								; these semantics, meaning, don't load anything
                  								; to it.
                  
@@ -1337,29 +1341,56 @@ C:\Users\nrpic_000\Documents\GitHub\ECE375\lab4\Lab4_LargeArithmetic\Lab4_LargeA
                  MAIN:							; The Main program
                  		; Setup the add funtion
                  		; Add the two 16-bit numbers
-000047 e001      		LDI		mpr, 0x01		;LSByte
+00004b e1c2      		LDI		YL, LOW(  addr_add_A)
+00004c e0d1      		LDI		YH, HIGH( addr_add_A)
+00004d ef0f      		LDI		mpr, 0xFF		;LSByte
+00004e 9309      		ST		Y+, mpr
+00004f ef0f      		LDI		mpr, 0xFF       ;MSByte
+000050 8308      		ST		Y, mpr
                  
-000048 e1c0      		LDI		YL, LOW(  addr_add_A)
-000049 e0d1      		LDI		YH, HIGH( addr_add_A)
-00004a 9309      		ST		Y+, mpr
-00004b e000      		LDI		mpr, 0x00       ;MSByte
-00004c 8308      		ST		Y, mpr
+000051 e1c4      		LDI		YL, LOW(  addr_add_B)
+000052 e0d1      		LDI		YH, HIGH( addr_add_B)
+000053 ef0f      		LDI		mpr, 0xFF       ;LSByte
+000054 9309      		ST		Y+, mpr	
+000055 ef0e      		LDI		mpr, 0xFE       ;MSByte
+000056 8308       		ST		Y, mpr
                  
-00004d e100      		LDI		mpr, 0x10       ;LSByte
-00004e e1c2      		LDI		YL, LOW(  addr_add_B)
-00004f e0d1      		LDI		YH, HIGH( addr_add_B)
-000050 9309      		ST		Y+, mpr
-000051 e000      		LDI		mpr, 0x00       ;MSByte
-000052 8308      		ST		Y, mpr
+000057 d017      		rcall	ADD16			; Call the add function
+                 		; The result is now in 0114:0116
                  
-000053 d002      		rcall	ADD16			; Call the add function
+                 		; First operand (result from addition)
+000058 e0c0      		LDI		YL, LOW(  addrA)
+000059 e0d1      		LDI		YH, HIGH( addrA)
+00005a e1e6      		LDI		ZL, LOW(  addr_add_RESULT)
+00005b e0f1      		LDI		ZH, HIGH( addr_add_RESULT)
+                 		
+00005c 9101      		LD		mpr, Z+
+00005d 9309      		ST		Y+, mpr
+00005e 9101      		LD		mpr, Z+
+00005f 9309      		ST		Y+, mpr
+000060 8100      		LD		mpr, Z
+000061 8308      		ST		Y, mpr
+                 
+                 		; Second operand (same as first operand)
+000062 e0c3      		LDI		YL, LOW(  addrB)
+000063 e0d1      		LDI		YH, HIGH( addrB)
+000064 e1e6      		LDI		ZL, LOW(  addr_add_RESULT)
+000065 e0f1      		LDI		ZH, HIGH( addr_add_RESULT)
+                 
+000066 9101      		LD		mpr, Z+
+000067 9309      		ST		Y+, mpr
+000068 9101      		LD		mpr, Z+
+000069 9309      		ST		Y+, mpr
+00006a 8100      		LD		mpr, Z
+00006b 8308      		ST		Y, mpr
+                 
                  		; Setup the multiply function
                  
                  		; Multiply two 24-bit numbers
-                 		;rcall	MUL24			; Call the multiply function
+00006c d033      		RCALL	MUL24			; Call the multiply function
                  
-000054 0000      		NOP
-000055 cfff      DONE:	rjmp	DONE			; Create an infinite while loop to signify the 
+00006d 0000      		NOP
+00006e cfff      DONE:	rjmp	DONE			; Create an infinite while loop to signify the 
                  								; end of the program.
                  
                  ;***********************************************************
@@ -1373,80 +1404,80 @@ C:\Users\nrpic_000\Documents\GitHub\ECE375\lab4\Lab4_LargeArithmetic\Lab4_LargeA
                  ;		out bit.
                  ;-----------------------------------------------------------
                  ADD16:
-                 		; Save variable by pushing them to the stack
-000056 923f      		PUSH 	A				; Save A register
-000057 924f      		PUSH	B				; Save B register
-000058 921f      		PUSH	rhi				; Save rhi register
-000059 920f      		PUSH	rlo				; Save rlo register
-00005a 922f      		PUSH	zero			; Save zero register
-00005b 93bf      		PUSH	XH				; Save X-ptr
-00005c 93af      		PUSH	XL
-00005d 93df      		PUSH	YH				; Save Y-ptr
-00005e 93cf      		PUSH	YL				
-00005f 93ff      		PUSH	ZH				; Save Z-ptr
-000060 93ef      		PUSH	ZL
-000061 931f      		PUSH	oloop			; Save counters
-000062 932f      		PUSH	iloop				
+                 		; Save variables by pushing them to the stack
+00006f 923f      		PUSH 	A				; Save A register
+000070 924f      		PUSH	B				; Save B register
+000071 921f      		PUSH	rhi				; Save rhi register
+000072 920f      		PUSH	rlo				; Save rlo register
+000073 922f      		PUSH	zero			; Save zero register
+000074 93bf      		PUSH	XH				; Save X-ptr
+000075 93af      		PUSH	XL
+000076 93df      		PUSH	YH				; Save Y-ptr
+000077 93cf      		PUSH	YL				
+000078 93ff      		PUSH	ZH				; Save Z-ptr
+000079 93ef      		PUSH	ZL
+00007a 931f      		PUSH	oloop			; Save counters
+00007b 932f      		PUSH	iloop				
                  
                  		;     AH, AL
                  		;     BH, BL
-                 		; R3, RH, RL
+                 		; RC, RH, RL
                  
                  		; FIRST BYTE
-000063 e1e0      		LDI		ZL, LOW(addr_add_A)
-000064 e0f1      		LDI		ZH, HIGH(addr_add_A)
-000065 9104      		LPM		mpr, Z  ;Put AL into mpr
+00007c e1e2      		LDI		ZL, LOW(addr_add_A)
+00007d e0f1      		LDI		ZH, HIGH(addr_add_A)
+00007e 8100      		LD		mpr, Z  ;Put AL into mpr
                  
-000066 e1e2      		LDI		ZL, LOW(addr_add_B)
-000067 e0f1      		LDI		ZH, HIGH(addr_add_B)
-000068 9165      		LPM		mpr2, Z+ ;Put BL into mpr2
+00007f e1e4      		LDI		ZL, LOW(addr_add_B)
+000080 e0f1      		LDI		ZH, HIGH(addr_add_B)
+000081 9161      		LD		mpr2, Z+ ;Put BL into mpr2
                  
-000069 0f06      		ADD		mpr, mpr2  ;Add BL+AL into mpr
+000082 0f06      		ADD		mpr, mpr2  ;Add BL+AL into mpr
                  
-00006a e1c4      		LDI		YL, LOW(addr_add_RESULT)
-00006b e0d1      		LDI		YH, HIGH(addr_add_RESULT)
+000083 e1c6      		LDI		YL, LOW(addr_add_RESULT)    ;Load the result location into the Y reg
+000084 e0d1      		LDI		YH, HIGH(addr_add_RESULT)   ; 
                  
-00006c 9309      		ST		Y+, mpr ;Store (BL+AL) into RL
+000085 9309      		ST		Y+, mpr ;Store (BL+AL) into RL, Y now points to RH
                  
                  		; SECOND BYTE
-00006d 9164      		LPM		mpr2, Z ;Put BH into mpr2
+000086 8160      		LD		mpr2, Z ;Put BH into mpr2
                  
-00006e e1e0      		LDI		ZL, LOW(addr_add_A)
-00006f e0f1      		LDI		ZH, HIGH(addr_add_A)
-000070 95e3      		INC		ZL
-000071 9104      		LPM		mpr, Z ;Put AH into mpr
+000087 e1e2      		LDI		ZL, LOW(addr_add_A)   ;Load the first operand
+000088 e0f1      		LDI		ZH, HIGH(addr_add_A)  ;
+000089 95e3      		INC		ZL                    ;Increment to get AH
+00008a 8100      		LD		mpr, Z ;Put AH into mpr
                  
-000072 1f06      		ADC		mpr, mpr2 ;Add AH, BH, and carry -> mpr
+00008b 1f06      		ADC		mpr, mpr2 ;Add AH, BH, and carry -> mpr
                  
-000073 9309      		ST		Y+, mpr
+00008c 9309      		ST		Y+, mpr   ;Store RH into the result, Y now points to RC
                  		
-                 		;Carry bit
-000074 f010      		BRCS	if_carry
+                 		; CARRY BIT
+00008d f010      		BRCS	if_carry
                  		;If not carry
-000075 2700      		clr		mpr
-000076 c001      		rjmp	func_end
+00008e 2700      		clr		mpr
+00008f c001      		rjmp	func_end
                  if_carry: ;if carry
-000077 e001      		LDI		mpr, 0x01
+000090 e001      		LDI		mpr, 0x01
                  func_end: 
-000078 8308      		ST		Y, mpr ;Store mpr into R3
+000091 8308      		ST		Y, mpr ;Store mpr into RC
                  
                  
                  		; Restore variable by popping them from the stack in reverse order
-000079 932f      		PUSH		iloop			; Restore all registers in reverse order
-00007a 931f      		PUSH		oloop
-00007b 93ef      		PUSH		ZL				
-00007c 93ff      		PUSH		ZH
-00007d 93cf      		PUSH		YL
-00007e 93df      		PUSH		YH
-00007f 93af      		PUSH		XL
-000080 93bf      		PUSH		XH
-000081 922f      		PUSH		zero
-000082 920f      		PUSH		rlo
-000083 921f      		PUSH		rhi
-000084 924f      		PUSH		B
-000085 923f      		PUSH		A
+000092 912f      		POP		iloop			; Restore all registers in reverse order
+000093 911f      		POP		oloop
+000094 91ef      		POP		ZL				
+000095 91ff      		POP		ZH
+000096 91cf      		POP		YL
+000097 91df      		POP		YH
+000098 91af      		POP		XL
+000099 91bf      		POP		XH
+00009a 902f      		POP		zero
+00009b 900f      		POP		rlo
+00009c 901f      		POP		rhi
+00009d 904f      		POP		B
+00009e 903f      		POP		A
                  
-000086 9508      		ret						; End a function with RET
+00009f 9508      		ret						; End a function with RET
                  
                  ;-----------------------------------------------------------
                  ; Func: MUL24
@@ -1454,12 +1485,78 @@ C:\Users\nrpic_000\Documents\GitHub\ECE375\lab4\Lab4_LargeArithmetic\Lab4_LargeA
                  ;		result.
                  ;-----------------------------------------------------------
                  MUL24:
-                 		; Save variable by pushing them to the stack
+0000a0 923f      		push 	A				; Save A register
+0000a1 924f      		push	B				; Save B register
+0000a2 921f      		push	rhi				; Save rhi register
+0000a3 920f      		push	rlo				; Save rlo register
+0000a4 922f      		push	zero			; Save zero register
+0000a5 93bf      		push	XH				; Save X-ptr
+0000a6 93af      		push	XL
+0000a7 93df      		push	YH				; Save Y-ptr
+0000a8 93cf      		push	YL				
+0000a9 93ff      		push	ZH				; Save Z-ptr
+0000aa 93ef      		push	ZL
+0000ab 931f      		push	oloop			; Save counters
+0000ac 932f      		push	iloop				
                  
-                 		; Execute the function here
-                 		
-                 		; Restore variable by popping them from the stack in reverse order\
-000087 9508      		ret						; End a function with RET
+0000ad 2422      		clr		zero			; Maintain zero semantics
+                 
+                 		; Set Y to beginning address of B
+0000ae e0c3      		ldi		YL, low(addrB)	; Load low byte
+0000af e0d1      		ldi		YH, high(addrB)	; Load high byte
+                 
+                 		; Set Z to begginning address of resulting Product
+0000b0 e0e6      		ldi		ZL, low(LAddrP)	; Load low byte
+0000b1 e0f1      		ldi		ZH, high(LAddrP); Load high byte
+                 
+                 		; Begin outer for loop
+0000b2 e013      		ldi		oloop, 3		; Load counter
+                 MUL24_OLOOP:
+                 		; Set X to beginning address of A
+0000b3 e0a0      		ldi		XL, low(addrA)	; Load low byte
+0000b4 e0b1      		ldi		XH, high(addrA)	; Load high byte
+                 
+                 		; Begin inner for loop
+0000b5 e023      		ldi		iloop, 3		; Load counter
+                 MUL24_ILOOP:
+0000b6 903d      		ld		A, X+			; Get byte of A operand
+0000b7 8048      		ld		B, Y			; Get byte of B operand
+0000b8 9c34      		mul		A,B				; Multiply A and B
+0000b9 9031      		ld		A, Z+			; Get a result byte from memory
+0000ba 9041      		ld		B, Z+			; Get the next result byte from memory
+0000bb 0c03      		add		rlo, A			; rlo <= rlo + A
+0000bc 1c14      		adc		rhi, B			; rhi <= rhi + B + carry
+0000bd 8030      		ld		A, Z			; Get a third byte from the result
+0000be 1c32      		adc		A, zero			; Add carry to A
+0000bf 8230      		st		Z, A			; Store third byte to memory
+0000c0 9212      		st		-Z, rhi			; Store second byte to memory
+0000c1 9202      		st		-Z, rlo			; Store third byte to memory
+0000c2 9631      		adiw	ZH:ZL, 1		; Z <= Z + 1			
+0000c3 952a      		dec		iloop			; Decrement counter
+0000c4 f789      		brne	MUL24_ILOOP		; Loop if iLoop != 0
+                 		; End inner for loop
+                 
+0000c5 9732      		sbiw	ZH:ZL, 2		; Z <= Z - 1
+0000c6 9621      		adiw	YH:YL, 1		; Y <= Y + 1
+0000c7 951a      		dec		oloop			; Decrement counter
+0000c8 f751      		brne	MUL24_OLOOP		; Loop if oLoop != 0
+                 		; End outer for loop
+                 		 		
+0000c9 912f      		pop		iloop			; Restore all registers in reverves order
+0000ca 911f      		pop		oloop
+0000cb 91ef      		pop		ZL				
+0000cc 91ff      		pop		ZH
+0000cd 91cf      		pop		YL
+0000ce 91df      		pop		YH
+0000cf 91af      		pop		XL
+0000d0 91bf      		pop		XH
+0000d1 902f      		pop		zero
+0000d2 900f      		pop		rlo
+0000d3 901f      		pop		rhi
+0000d4 904f      		pop		B
+0000d5 903f      		pop		A
+                 
+0000d6 9508      		ret						; End a function with RET
                  
                  ;-----------------------------------------------------------
                  ; Func: MUL16
@@ -1472,77 +1569,77 @@ C:\Users\nrpic_000\Documents\GitHub\ECE375\lab4\Lab4_LargeArithmetic\Lab4_LargeA
                  ;		calling this function.
                  ;-----------------------------------------------------------
                  MUL16:
-000088 923f      		push 	A				; Save A register
-000089 924f      		push	B				; Save B register
-00008a 921f      		push	rhi				; Save rhi register
-00008b 920f      		push	rlo				; Save rlo register
-00008c 922f      		push	zero			; Save zero register
-00008d 93bf      		push	XH				; Save X-ptr
-00008e 93af      		push	XL
-00008f 93df      		push	YH				; Save Y-ptr
-000090 93cf      		push	YL				
-000091 93ff      		push	ZH				; Save Z-ptr
-000092 93ef      		push	ZL
-000093 931f      		push	oloop			; Save counters
-000094 932f      		push	iloop				
+0000d7 923f      		push 	A				; Save A register
+0000d8 924f      		push	B				; Save B register
+0000d9 921f      		push	rhi				; Save rhi register
+0000da 920f      		push	rlo				; Save rlo register
+0000db 922f      		push	zero			; Save zero register
+0000dc 93bf      		push	XH				; Save X-ptr
+0000dd 93af      		push	XL
+0000de 93df      		push	YH				; Save Y-ptr
+0000df 93cf      		push	YL				
+0000e0 93ff      		push	ZH				; Save Z-ptr
+0000e1 93ef      		push	ZL
+0000e2 931f      		push	oloop			; Save counters
+0000e3 932f      		push	iloop				
                  
-000095 2422      		clr		zero			; Maintain zero semantics
+0000e4 2422      		clr		zero			; Maintain zero semantics
                  
                  		; Set Y to beginning address of B
-000096 e0c2      		ldi		YL, low(addrB)	; Load low byte
-000097 e0d1      		ldi		YH, high(addrB)	; Load high byte
+0000e5 e0c3      		ldi		YL, low(addrB)	; Load low byte
+0000e6 e0d1      		ldi		YH, high(addrB)	; Load high byte
                  
                  		; Set Z to begginning address of resulting Product
-000098 e0e4      		ldi		ZL, low(LAddrP)	; Load low byte
-000099 e0f1      		ldi		ZH, high(LAddrP); Load high byte
+0000e7 e0e6      		ldi		ZL, low(LAddrP)	; Load low byte
+0000e8 e0f1      		ldi		ZH, high(LAddrP); Load high byte
                  
                  		; Begin outer for loop
-00009a e012      		ldi		oloop, 2		; Load counter
+0000e9 e012      		ldi		oloop, 2		; Load counter
                  MUL16_OLOOP:
                  		; Set X to beginning address of A
-00009b e0a0      		ldi		XL, low(addrA)	; Load low byte
-00009c e0b1      		ldi		XH, high(addrA)	; Load high byte
+0000ea e0a0      		ldi		XL, low(addrA)	; Load low byte
+0000eb e0b1      		ldi		XH, high(addrA)	; Load high byte
                  
                  		; Begin inner for loop
-00009d e022      		ldi		iloop, 2		; Load counter
+0000ec e022      		ldi		iloop, 2		; Load counter
                  MUL16_ILOOP:
-00009e 903d      		ld		A, X+			; Get byte of A operand
-00009f 8048      		ld		B, Y			; Get byte of B operand
-0000a0 9c34      		mul		A,B				; Multiply A and B
-0000a1 9031      		ld		A, Z+			; Get a result byte from memory
-0000a2 9041      		ld		B, Z+			; Get the next result byte from memory
-0000a3 0c03      		add		rlo, A			; rlo <= rlo + A
-0000a4 1c14      		adc		rhi, B			; rhi <= rhi + B + carry
-0000a5 8030      		ld		A, Z			; Get a third byte from the result
-0000a6 1c32      		adc		A, zero			; Add carry to A
-0000a7 8230      		st		Z, A			; Store third byte to memory
-0000a8 9212      		st		-Z, rhi			; Store second byte to memory
-0000a9 9202      		st		-Z, rlo			; Store third byte to memory
-0000aa 9631      		adiw	ZH:ZL, 1		; Z <= Z + 1			
-0000ab 952a      		dec		iloop			; Decrement counter
-0000ac f789      		brne	MUL16_ILOOP		; Loop if iLoop != 0
+0000ed 903d      		ld		A, X+			; Get byte of A operand
+0000ee 8048      		ld		B, Y			; Get byte of B operand
+0000ef 9c34      		mul		A,B				; Multiply A and B
+0000f0 9031      		ld		A, Z+			; Get a result byte from memory
+0000f1 9041      		ld		B, Z+			; Get the next result byte from memory
+0000f2 0c03      		add		rlo, A			; rlo <= rlo + A
+0000f3 1c14      		adc		rhi, B			; rhi <= rhi + B + carry
+0000f4 8030      		ld		A, Z			; Get a third byte from the result
+0000f5 1c32      		adc		A, zero			; Add carry to A
+0000f6 8230      		st		Z, A			; Store third byte to memory
+0000f7 9212      		st		-Z, rhi			; Store second byte to memory
+0000f8 9202      		st		-Z, rlo			; Store third byte to memory
+0000f9 9631      		adiw	ZH:ZL, 1		; Z <= Z + 1			
+0000fa 952a      		dec		iloop			; Decrement counter
+0000fb f789      		brne	MUL16_ILOOP		; Loop if iLoop != 0
                  		; End inner for loop
                  
-0000ad 9731      		sbiw	ZH:ZL, 1		; Z <= Z - 1
-0000ae 9621      		adiw	YH:YL, 1		; Y <= Y + 1
-0000af 951a      		dec		oloop			; Decrement counter
-0000b0 f751      		brne	MUL16_OLOOP		; Loop if oLoop != 0
+0000fc 9731      		sbiw	ZH:ZL, 1		; Z <= Z - 1
+0000fd 9621      		adiw	YH:YL, 1		; Y <= Y + 1
+0000fe 951a      		dec		oloop			; Decrement counter
+0000ff f751      		brne	MUL16_OLOOP		; Loop if oLoop != 0
                  		; End outer for loop
                  		 		
-0000b1 912f      		pop		iloop			; Restore all registers in reverves order
-0000b2 911f      		pop		oloop
-0000b3 91ef      		pop		ZL				
-0000b4 91ff      		pop		ZH
-0000b5 91cf      		pop		YL
-0000b6 91df      		pop		YH
-0000b7 91af      		pop		XL
-0000b8 91bf      		pop		XH
-0000b9 902f      		pop		zero
-0000ba 900f      		pop		rlo
-0000bb 901f      		pop		rhi
-0000bc 904f      		pop		B
-0000bd 903f      		pop		A
-0000be 9508      		ret						; End a function with RET
+000100 912f      		pop		iloop			; Restore all registers in reverves order
+000101 911f      		pop		oloop
+000102 91ef      		pop		ZL				
+000103 91ff      		pop		ZH
+000104 91cf      		pop		YL
+000105 91df      		pop		YH
+000106 91af      		pop		XL
+000107 91bf      		pop		XH
+000108 902f      		pop		zero
+000109 900f      		pop		rlo
+00010a 901f      		pop		rhi
+00010b 904f      		pop		B
+00010c 903f      		pop		A
+00010d 9508      		ret						; End a function with RET
                  
                  ;-----------------------------------------------------------
                  ; Func: Template function header
@@ -1555,7 +1652,7 @@ C:\Users\nrpic_000\Documents\GitHub\ECE375\lab4\Lab4_LargeArithmetic\Lab4_LargeA
                  		; Execute the function here
                  		
                  		; Restore variable by popping them from the stack in reverse order\
-0000bf 9508      		ret						; End a function with RET
+00010e 9508      		ret						; End a function with RET
                  
                  
                  ;***********************************************************
@@ -1585,32 +1682,32 @@ counted separately from r26..r31 here.
 .dseg memory usage only counts static data declared with .byte
 
 "ATmega128" register use summary:
-r0 :   6 r1 :   6 r2 :   7 r3 :  11 r4 :   8 r5 :   0 r6 :   0 r7 :   0 
+r0 :  10 r1 :  10 r2 :  11 r3 :  20 r4 :  14 r5 :   0 r6 :   0 r7 :   0 
 r8 :   0 r9 :   0 r10:   0 r11:   0 r12:   0 r13:   0 r14:   0 r15:   0 
-r16:  17 r17:   6 r18:   6 r19:   0 r20:   0 r21:   0 r22:   4 r23:   0 
-r24:   0 r25:   0 r26:   5 r27:   5 r28:   9 r29:   9 r30:  11 r31:  10 
-x  :   1 y  :   8 z  :  10 
+r16:  33 r17:  10 r18:  10 r19:   0 r20:   0 r21:   0 r22:   4 r23:   0 
+r24:   0 r25:   0 r26:   8 r27:   8 r28:  15 r29:  15 r30:  18 r31:  17 
+x  :   2 y  :  15 z  :  22 
 Registers used: 18 out of 35 (51.4%)
 
 "ATmega128" instruction use summary:
-.lds  :   0 .sts  :   0 adc   :   3 add   :   2 adiw  :   2 and   :   0 
+.lds  :   0 .sts  :   0 adc   :   5 add   :   3 adiw  :   4 and   :   0 
 andi  :   0 asr   :   0 bclr  :   0 bld   :   0 brbc  :   0 brbs  :   0 
 brcc  :   0 brcs  :   1 break :   0 breq  :   0 brge  :   0 brhc  :   0 
 brhs  :   0 brid  :   0 brie  :   0 brlo  :   0 brlt  :   0 brmi  :   0 
-brne  :   2 brpl  :   0 brsh  :   0 brtc  :   0 brts  :   0 brvc  :   0 
+brne  :   4 brpl  :   0 brsh  :   0 brtc  :   0 brts  :   0 brvc  :   0 
 brvs  :   0 bset  :   0 bst   :   0 call  :   0 cbi   :   0 cbr   :   0 
-clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :   3 cls   :   0 
+clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :   4 cls   :   0 
 clt   :   0 clv   :   0 clz   :   0 com   :   0 cp    :   0 cpc   :   0 
-cpi   :   0 cpse  :   0 dec   :   2 elpm  :   0 eor   :   0 fmul  :   0 
+cpi   :   0 cpse  :   0 dec   :   4 elpm  :   0 eor   :   0 fmul  :   0 
 fmuls :   0 fmulsu:   0 icall :   0 ijmp  :   0 in    :   0 inc   :   1 
-jmp   :   0 ld    :   5 ldd   :   0 ldi   :  25 lds   :   0 lpm   :   7 
-lsl   :   0 lsr   :   0 mov   :   0 movw  :   0 mul   :   1 muls  :   0 
-mulsu :   0 neg   :   0 nop   :   1 or    :   0 ori   :   0 out   :   0 
-pop   :  13 push  :  39 rcall :   1 ret   :   4 reti  :   0 rjmp  :   3 
+jmp   :   0 ld    :  20 ldd   :   0 ldi   :  43 lds   :   0 lpm   :   0 
+lsl   :   0 lsr   :   0 mov   :   0 movw  :   0 mul   :   2 muls  :   0 
+mulsu :   0 neg   :   0 nop   :   1 or    :   0 ori   :   0 out   :   2 
+pop   :  39 push  :  39 rcall :   2 ret   :   4 reti  :   0 rjmp  :   3 
 rol   :   0 ror   :   0 sbc   :   0 sbci  :   0 sbi   :   0 sbic  :   0 
-sbis  :   0 sbiw  :   1 sbr   :   0 sbrc  :   0 sbrs  :   0 sec   :   0 
+sbis  :   0 sbiw  :   2 sbr   :   0 sbrc  :   0 sbrs  :   0 sec   :   0 
 seh   :   0 sei   :   0 sen   :   0 ser   :   0 ses   :   0 set   :   0 
-sev   :   0 sez   :   0 sleep :   0 spm   :   0 st    :  10 std   :   0 
+sev   :   0 sez   :   0 sleep :   0 spm   :   0 st    :  19 std   :   0 
 sts   :   0 sub   :   0 subi  :   0 swap  :   0 tst   :   0 wdr   :   0 
 
 Instructions used: 20 out of 114 (17.5%)
@@ -1618,7 +1715,7 @@ Instructions used: 20 out of 114 (17.5%)
 "ATmega128" memory use summary [bytes]:
 Segment   Begin    End      Code   Data   Used    Size   Use%
 ---------------------------------------------------------------
-[.cseg] 0x000000 0x000180    246      0    246  131072   0.2%
+[.cseg] 0x000000 0x00021e    404      0    404  131072   0.3%
 [.dseg] 0x000100 0x000100      0      0      0    4096   0.0%
 [.eseg] 0x000000 0x000000      0      0      0    4096   0.0%
 
