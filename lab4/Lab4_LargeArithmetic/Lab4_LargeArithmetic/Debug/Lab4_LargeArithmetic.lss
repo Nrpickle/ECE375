@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.1.57  C:\Users\nrpic_000\Documents\GitHub\ECE375\lab4\Lab4_LargeArithmetic\Lab4_LargeArithmetic\main.asm Wed Nov 04 13:09:33 2015
+AVRASM ver. 2.1.57  C:\Users\nrpic_000\Documents\GitHub\ECE375\lab4\Lab4_LargeArithmetic\Lab4_LargeArithmetic\main.asm Wed Nov 04 18:01:04 2015
 
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\avrasm\inc\m128def.inc'
 C:\Users\nrpic_000\Documents\GitHub\ECE375\lab4\Lab4_LargeArithmetic\Lab4_LargeArithmetic\main.asm(16): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\avrasm\inc\m128def.inc'
@@ -1352,7 +1352,7 @@ C:\Users\nrpic_000\Documents\GitHub\ECE375\lab4\Lab4_LargeArithmetic\Lab4_LargeA
 000052 e0d1      		LDI		YH, HIGH( addr_add_B)
 000053 ef0f      		LDI		mpr, 0xFF       ;LSByte
 000054 9309      		ST		Y+, mpr	
-000055 ef0e      		LDI		mpr, 0xFE       ;MSByte
+000055 ef0f      		LDI		mpr, 0xFF       ;MSByte
 000056 8308       		ST		Y, mpr
                  
 000057 d017      		rcall	ADD16			; Call the add function

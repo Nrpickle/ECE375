@@ -85,7 +85,7 @@ MAIN:							; The Main program
 		LDI		YH, HIGH( addr_add_B)
 		LDI		mpr, 0xFF       ;LSByte
 		ST		Y+, mpr	
-		LDI		mpr, 0xFE       ;MSByte
+		LDI		mpr, 0xFF       ;MSByte
  		ST		Y, mpr
 
 		rcall	ADD16			; Call the add function
