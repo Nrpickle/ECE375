@@ -23,8 +23,13 @@
   <FILE>Lab5Interrupts.lss</FILE>
  </OUTPUT_FILES>
  <LABELS>
-  <INIT><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab5\Lab5Interrupts\Lab5Interrupts\main.asm</FILE><LINE>52</LINE></INIT>
-  <MAIN><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab5\Lab5Interrupts\Lab5Interrupts\main.asm</FILE><LINE>71</LINE></MAIN>
-  <FUNC><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab5\Lab5Interrupts\Lab5Interrupts\main.asm</FILE><LINE>93</LINE></FUNC>
+  <INIT><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab5\Lab5Interrupts\Lab5Interrupts\main.asm</FILE><LINE>71</LINE></INIT>
+  <HitLeft><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab5\Lab5Interrupts\Lab5Interrupts\main.asm</FILE><LINE>139</LINE></HitLeft>
+  <MAIN><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab5\Lab5Interrupts\Lab5Interrupts\main.asm</FILE><LINE>111</LINE></MAIN>
+  <Wait><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab5\Lab5Interrupts\Lab5Interrupts\main.asm</FILE><LINE>178</LINE></Wait>
+  <Loop><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab5\Lab5Interrupts\Lab5Interrupts\main.asm</FILE><LINE>183</LINE></Loop>
+  <OLoop><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab5\Lab5Interrupts\Lab5Interrupts\main.asm</FILE><LINE>184</LINE></OLoop>
+  <ILoop><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab5\Lab5Interrupts\Lab5Interrupts\main.asm</FILE><LINE>185</LINE></ILoop>
+  <FUNC><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab5\Lab5Interrupts\Lab5Interrupts\main.asm</FILE><LINE>208</LINE></FUNC>
  </LABELS>
 </ASSEMBLER_INFO>
