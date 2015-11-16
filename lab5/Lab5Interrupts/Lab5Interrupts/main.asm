@@ -1,8 +1,9 @@
 ;***********************************************************
 ;*
-;*	Enter Name of file here
+;*	Lab 5: Interrupts
 ;*
-;*	Enter the description of the program here
+;*	This file uses the hardware interrupts on the 
+;*  ATmega chip to replicate the previous Tekbot bumping code.
 ;*
 ;*	This is the skeleton file Lab 5 of ECE 375
 ;*
@@ -63,7 +64,8 @@
 		reti
 
 .org    $0004  ;Configure interrupt
-		
+		rcall  HitRight
+    reti
 		
 
 .org	$0046					; End of Interrupt Vectors
