@@ -1,0 +1,37 @@
+<ASSEMBLER_INFO>
+ <VERSION>2.1.57</VERSION>
+ <DEVICE>"ATmega128"</DEVICE>
+ <WORKING_DIR>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab6\Lab6_Timers\Lab6_Timers\Debug</WORKING_DIR>
+ <INCLUDE_PATH>
+  <DIR>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\avrasm\inc</DIR>
+  <DIR>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\avrasm\inc</DIR>
+  <DIR>C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avrassembler\Include</DIR>
+  <DIR></DIR>
+ </INCLUDE_PATH>
+ <SOURCE_FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab6\Lab6_Timers\Lab6_Timers\main.asm</SOURCE_FILE>
+ <INCLUDED_FILES>
+  <FILE>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\avrasm\inc\m128def.inc</FILE>
+ </INCLUDED_FILES>
+ <OBJECT_FILES>
+  <FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab6\Lab6_Timers\Lab6_Timers\Debug\Lab6_Timers.obj</FILE>
+ </OBJECT_FILES>
+ <HEX_FILES>
+  <FILE>Lab6_Timers.hex</FILE>
+ </HEX_FILES>
+ <OUTPUT_FILES>
+  <FILE>Lab6_Timers.map</FILE>
+  <FILE>Lab6_Timers.lss</FILE>
+ </OUTPUT_FILES>
+ <LABELS>
+  <INIT><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab6\Lab6_Timers\Lab6_Timers\main.asm</FILE><LINE>56</LINE></INIT>
+  <MAIN><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab6\Lab6_Timers\Lab6_Timers\main.asm</FILE><LINE>92</LINE></MAIN>
+  <TESTBUTTONTWO><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab6\Lab6_Timers\Lab6_Timers\main.asm</FILE><LINE>107</LINE></TESTBUTTONTWO>
+  <Wait><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab6\Lab6_Timers\Lab6_Timers\main.asm</FILE><LINE>143</LINE></Wait>
+  <DONETESTING><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab6\Lab6_Timers\Lab6_Timers\main.asm</FILE><LINE>119</LINE></DONETESTING>
+  <END><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab6\Lab6_Timers\Lab6_Timers\main.asm</FILE><LINE>127</LINE></END>
+  <Loop><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab6\Lab6_Timers\Lab6_Timers\main.asm</FILE><LINE>148</LINE></Loop>
+  <OLoop><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab6\Lab6_Timers\Lab6_Timers\main.asm</FILE><LINE>149</LINE></OLoop>
+  <ILoop><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab6\Lab6_Timers\Lab6_Timers\main.asm</FILE><LINE>150</LINE></ILoop>
+  <FUNC><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab6\Lab6_Timers\Lab6_Timers\main.asm</FILE><LINE>172</LINE></FUNC>
+ </LABELS>
+</ASSEMBLER_INFO>
