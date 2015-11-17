@@ -23,15 +23,19 @@
   <FILE>Lab6_Timers.lss</FILE>
  </OUTPUT_FILES>
  <LABELS>
-  <INIT><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab6\Lab6_Timers\Lab6_Timers\main.asm</FILE><LINE>63</LINE></INIT>
-  <MAIN><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab6\Lab6_Timers\Lab6_Timers\main.asm</FILE><LINE>114</LINE></MAIN>
-  <TESTBUTTONTWO><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab6\Lab6_Timers\Lab6_Timers\main.asm</FILE><LINE>129</LINE></TESTBUTTONTWO>
-  <Wait><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab6\Lab6_Timers\Lab6_Timers\main.asm</FILE><LINE>166</LINE></Wait>
-  <DONETESTING><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab6\Lab6_Timers\Lab6_Timers\main.asm</FILE><LINE>141</LINE></DONETESTING>
-  <END><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab6\Lab6_Timers\Lab6_Timers\main.asm</FILE><LINE>150</LINE></END>
-  <Loop><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab6\Lab6_Timers\Lab6_Timers\main.asm</FILE><LINE>171</LINE></Loop>
-  <OLoop><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab6\Lab6_Timers\Lab6_Timers\main.asm</FILE><LINE>172</LINE></OLoop>
-  <ILoop><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab6\Lab6_Timers\Lab6_Timers\main.asm</FILE><LINE>173</LINE></ILoop>
-  <FUNC><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab6\Lab6_Timers\Lab6_Timers\main.asm</FILE><LINE>195</LINE></FUNC>
+  <INIT><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab6\Lab6_Timers\Lab6_Timers\main.asm</FILE><LINE>64</LINE></INIT>
+  <SPEEDS><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab6\Lab6_Timers\Lab6_Timers\main.asm</FILE><LINE>238</LINE></SPEEDS>
+  <MAIN><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab6\Lab6_Timers\Lab6_Timers\main.asm</FILE><LINE>123</LINE></MAIN>
+  <TESTBUTTONTWO><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab6\Lab6_Timers\Lab6_Timers\main.asm</FILE><LINE>151</LINE></TESTBUTTONTWO>
+  <ENDTESTBUTTONONE><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab6\Lab6_Timers\Lab6_Timers\main.asm</FILE><LINE>138</LINE></ENDTESTBUTTONONE>
+  <Wait><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab6\Lab6_Timers\Lab6_Timers\main.asm</FILE><LINE>193</LINE></Wait>
+  <DONETESTING><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab6\Lab6_Timers\Lab6_Timers\main.asm</FILE><LINE>169</LINE></DONETESTING>
+  <ENDTESTBUTTONTWO><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab6\Lab6_Timers\Lab6_Timers\main.asm</FILE><LINE>164</LINE></ENDTESTBUTTONTWO>
+  <END><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab6\Lab6_Timers\Lab6_Timers\main.asm</FILE><LINE>178</LINE></END>
+  <Loop><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab6\Lab6_Timers\Lab6_Timers\main.asm</FILE><LINE>198</LINE></Loop>
+  <OLoop><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab6\Lab6_Timers\Lab6_Timers\main.asm</FILE><LINE>199</LINE></OLoop>
+  <ILoop><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab6\Lab6_Timers\Lab6_Timers\main.asm</FILE><LINE>200</LINE></ILoop>
+  <FUNC><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab6\Lab6_Timers\Lab6_Timers\main.asm</FILE><LINE>222</LINE></FUNC>
+  <SPEEDS_END><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab6\Lab6_Timers\Lab6_Timers\main.asm</FILE><LINE>240</LINE></SPEEDS_END>
  </LABELS>
 </ASSEMBLER_INFO>

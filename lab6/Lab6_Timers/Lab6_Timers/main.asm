@@ -28,6 +28,7 @@
 .def	waitcnt = r18
 .def	ilcnt = r19				; Inner Loop Counter
 .def	olcnt = r20				; Outer Loop Counter
+.def	speedDial = r21
 
 .equ	debounceTime = 20
 .equ	EngEnR = 4				; right Engine Enable Bit
@@ -78,28 +79,36 @@ INIT:
 		; Configure External Interrupts, if needed
 
 		; Configure 8-bit Timer/Counters
-		;LDI		mpr, 0b01111001 ;clk/0, Fast PWM, Set on compare, clear at top
-		;OUT		TCCR0, mpr
-		;OUT		TCCR2, mpr
+		LDI		mpr, 0b01111001 ;clk/0, Fast PWM, Set on compare, clear at top
+		OUT		TCCR0, mpr
+		OUT		TCCR2, mpr
+
+		LDI		mpr, 255
+		OUT		OCR0, mpr
+		OUT		OCR2, mpr
 		;WGM: 11
 
-								; no prescaling
 
 		; Set TekBot to Move Forward (1<<EngDirR|1<<EngDirL)
-		;LDI		mpr, MovFwd
-		;OUT		PORTB, mpr
-		LDI		mpr, $00
+		LDI		mpr, MovFwd
 		OUT		PORTB, mpr
 
 
 		; Set initial speed, display on Port B
-		LDI		speedCnt, 10
+		LDI		speedCnt, 0
+		LDI		speedDial, 0
+		OUT		OCR0, speedDial
+		OUT		OCR2, speedDial
 
 		IN		mpr, PORTB		;Read in the current state of PORTB
 		ANDI	mpr, $F0
 		OR		mpr, speedCnt	;OR PortB with our count (only possible lower nibble values)
 		OUT		PORTB, mpr		;Set the mpr to the output
-		
+
+		;Configure memory address
+		LDI		XL, LOW(SPEEDS<<1)
+		LDI		XH, HIGH(SPEEDS<<1)
+
 		;speedCnt = 0;
 		;LDI		speedCnt, $00	;Load a 0 into speedCnt (initial value)
 ;		IN		mpr, PORTB		;Read in the current state of PORTB
@@ -119,11 +128,24 @@ MAIN:
 		RJMP	TESTBUTTONTWO
 		;Process first button
 		CPI		speedCnt, $0F	;If the count is 15, do nothing (skip inc)
-		BREQ	TESTBUTTONTWO
+		BREQ	ENDTESTBUTTONONE
 		LDI		waitcnt, debounceTime
 		CALL	Wait
 
-		INC		speedCnt		
+		INC		speedCnt
+		LDI		mpr, 17
+		ADD		speedDial, mpr
+ENDTESTBUTTONONE:
+		OUT		OCR0, speedDial
+		OUT		OCR2, speedDial
+
+
+
+;		ADIW	XH:XL, 1
+;		LD		mpr, X
+;		OUT		OCR0, mpr
+;		OUT		OCR2, mpr
+
 
 		;BUTTON 2 - DECREASE SPEED
 TESTBUTTONTWO:
@@ -131,13 +153,19 @@ TESTBUTTONTWO:
 		SBRC	mpr, 1
 		RJMP	DONETESTING
 		;Process 2nd button
-		CPI		speedCnt, $00   ;If the count is 0, do nothing (skip DEC)
-		BREQ	DONETESTING
+		CPI		speedCnt, $00   ;If the count is 0, skip DEC
+		BREQ	ENDTESTBUTTONTWO
 		LDI		waitcnt, debounceTime
 		CALL	Wait
 
 		DEC		speedCnt
-								
+
+		SUBI	speedDial, 17
+ENDTESTBUTTONTWO:
+		OUT		OCR0, speedDial
+		OUT		OCR2, speedDial
+
+
 DONETESTING:
 		;Output to LEDs
 		IN		mpr, PORTB		;Read in the current state of PORTB
@@ -153,7 +181,6 @@ END:
 
 ; if pressed, adjust speed
 								; also, adjust speed indication
-
 
 ;----------------------------------------------------------------
 ; Sub:	Wait
@@ -206,6 +233,11 @@ FUNC:	; Begin a function with a label
 ;*	Stored Program Data
 ;***********************************************************
 		; Enter any stored data you might need here
+
+
+SPEEDS: 
+;.DB 0, 17, 34, 51, 68, 85, 102, 136, 153, 170, 187, 204, 221, 238, 255
+SPEEDS_END:
 
 ;***********************************************************
 ;*	Additional Program Includes
