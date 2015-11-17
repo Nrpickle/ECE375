@@ -102,10 +102,6 @@ INIT:
 		OR		mpr, speedCnt	;OR PortB with our count (only possible lower nibble values)
 		OUT		PORTB, mpr		;Set the mpr to the output
 
-		;Configure memory address
-		LDI		XL, LOW(SPEEDS<<1)
-		LDI		XH, HIGH(SPEEDS<<1)
-
 		; Enable global interrupts (if any are used)
 
 ;***********************************************************
