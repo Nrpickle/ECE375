@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.1.57  C:\Users\nrpic_000\Documents\GitHub\ECE375\lab6\Lab6_Timers\Lab6_Timers\main.asm Mon Nov 16 12:38:27 2015
+AVRASM ver. 2.1.57  C:\Users\nrpic_000\Documents\GitHub\ECE375\lab6\Lab6_Timers\Lab6_Timers\main.asm Mon Nov 16 16:37:25 2015
 
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\avrasm\inc\m128def.inc'
 C:\Users\nrpic_000\Documents\GitHub\ECE375\lab6\Lab6_Timers\Lab6_Timers\main.asm(21): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\avrasm\inc\m128def.inc'
@@ -1296,11 +1296,18 @@ C:\Users\nrpic_000\Documents\GitHub\ECE375\lab6\Lab6_Timers\Lab6_Timers\main.asm
                  .def	ilcnt = r19				; Inner Loop Counter
                  .def	olcnt = r20				; Outer Loop Counter
                  
-                 .equ	debounceTime = 10
+                 .equ	debounceTime = 20
                  .equ	EngEnR = 4				; right Engine Enable Bit
                  .equ	EngEnL = 7				; left Engine Enable Bit
                  .equ	EngDirR = 5				; right Engine Direction Bit
                  .equ	EngDirL = 6				; left Engine Direction Bit
+                 
+                 .equ	MovFwd = (1<<EngDirR|1<<EngDirL)	; Move Forwards Command
+                 .equ	MovBck = $00				; Move Backwards Command
+                 .equ	TurnR = (1<<EngDirL)			; Turn Right Command
+                 .equ	TurnL = (1<<EngDirR)			; Turn Left Command
+                 .equ	Halt = (1<<EngEnR|1<<EngEnL)		; Halt Command
+                 
                  
                  ;***********************************************************
                  ;*	Start of Code Segment
@@ -1338,15 +1345,30 @@ C:\Users\nrpic_000\Documents\GitHub\ECE375\lab6\Lab6_Timers\Lab6_Timers\main.asm
                  		; Configure External Interrupts, if needed
                  
                  		; Configure 8-bit Timer/Counters
+                 		;LDI		mpr, 0b01111001 ;clk/0, Fast PWM, Set on compare, clear at top
+                 		;OUT		TCCR0, mpr
+                 		;OUT		TCCR2, mpr
+                 		;WGM: 11
                  
                  								; no prescaling
                  
                  		; Set TekBot to Move Forward (1<<EngDirR|1<<EngDirL)
+                 		;LDI		mpr, MovFwd
+                 		;OUT		PORTB, mpr
+00004e e000      		LDI		mpr, $00
+00004f bb08      		OUT		PORTB, mpr
+                 
                  
                  		; Set initial speed, display on Port B
+000050 e01a      		LDI		speedCnt, 10
+                 
+000051 b308      		IN		mpr, PORTB		;Read in the current state of PORTB
+000052 7f00      		ANDI	mpr, $F0
+000053 2b01      		OR		mpr, speedCnt	;OR PortB with our count (only possible lower nibble values)
+000054 bb08      		OUT		PORTB, mpr		;Set the mpr to the output
                  		
                  		;speedCnt = 0;
-00004e e010      		LDI		speedCnt, $00	;Load a 0 into speedCnt (initial value)
+                 		;LDI		speedCnt, $00	;Load a 0 into speedCnt (initial value)
                  ;		IN		mpr, PORTB		;Read in the current state of PORTB
                  ;		OR		mpr, speedCnt	;OR PortB with our count (only possible lower nibble values)
                  ;		OUT		PORTB, mpr		;Set the mpr to the output
@@ -1359,40 +1381,41 @@ C:\Users\nrpic_000\Documents\GitHub\ECE375\lab6\Lab6_Timers\Lab6_Timers\main.asm
                  MAIN:
                  		;BUTTON 1 - INCREASE SPEED
                  		; poll Port D pushbuttons (if needed)
-00004f b300      		IN		mpr, PIND
-000050 fd00      		SBRC	mpr, 0		;Check the first button, if pressed, skip jump
-000051 c006      		RJMP	TESTBUTTONTWO
+000055 b300      		IN		mpr, PIND
+000056 fd00      		SBRC	mpr, 0		;Check the first button, if pressed, skip jump
+000057 c006      		RJMP	TESTBUTTONTWO
                  		;Process first button
-000052 301f      		CPI		speedCnt, $0F	;If the count is 15, do nothing (skip inc)
-000053 f021      		BREQ	TESTBUTTONTWO
-000054 e00a      		LDI		mpr, debounceTime
-000055 940e 0067 		CALL	Wait
+000058 301f      		CPI		speedCnt, $0F	;If the count is 15, do nothing (skip inc)
+000059 f021      		BREQ	TESTBUTTONTWO
+00005a e124      		LDI		waitcnt, debounceTime
+00005b 940e 006d 		CALL	Wait
                  
-000057 9513      		INC		speedCnt		
+00005d 9513      		INC		speedCnt		
                  
                  		;BUTTON 2 - DECREASE SPEED
                  TESTBUTTONTWO:
-000058 b300      		IN		mpr, PIND
-000059 fd01      		SBRC	mpr, 1
-00005a c006      		RJMP	DONETESTING
+00005e b300      		IN		mpr, PIND
+00005f fd01      		SBRC	mpr, 1
+000060 c006      		RJMP	DONETESTING
                  		;Process 2nd button
-00005b 3010      		CPI		speedCnt, $00   ;If the count is 0, do nothing (skip DEC)
-00005c f021      		BREQ	DONETESTING
-00005d e00a      		LDI		mpr, debounceTime
-00005e 940e 0067 		CALL	Wait
+000061 3010      		CPI		speedCnt, $00   ;If the count is 0, do nothing (skip DEC)
+000062 f021      		BREQ	DONETESTING
+000063 e124      		LDI		waitcnt, debounceTime
+000064 940e 006d 		CALL	Wait
                  
-000060 951a      		DEC		speedCnt
+000066 951a      		DEC		speedCnt
                  								
                  DONETESTING:
                  		;Output to LEDs
-000061 b308      		IN		mpr, PORTB		;Read in the current state of PORTB
-000062 7f00      		ANDI	mpr, $F0
-000063 2b01      		OR		mpr, speedCnt	;OR PortB with our count (only possible lower nibble values)
-000064 bb08      		OUT		PORTB, mpr		;Set the mpr to the output
+000067 b308      		IN		mpr, PORTB		;Read in the current state of PORTB
+000068 7f00      		ANDI	mpr, $F0
+000069 2b01      		OR		mpr, speedCnt	;OR PortB with our count (only possible lower nibble values)
+00006a bb08      		OUT		PORTB, mpr		;Set the mpr to the output
                  
-000065 0000      		NOP
+                 
+00006b 0000      		NOP
                  END:
-000066 cfe8      		rjmp	MAIN			; return to top of MAIN
+00006c cfe8      		rjmp	MAIN			; return to top of MAIN
                  
                  
                  ; if pressed, adjust speed
@@ -1408,23 +1431,23 @@ C:\Users\nrpic_000\Documents\GitHub\ECE375\lab6\Lab6_Timers\Lab6_Timers\main.asm
                  ;			((3 * ilcnt + 3) * olcnt + 3) * waitcnt + 13 + call
                  ;----------------------------------------------------------------
                  Wait:
-000067 932f      		push	waitcnt			; Save wait register
-000068 933f      		push	ilcnt			; Save ilcnt register
-000069 934f      		push	olcnt			; Save olcnt register
+00006d 932f      		push	waitcnt			; Save wait register
+00006e 933f      		push	ilcnt			; Save ilcnt register
+00006f 934f      		push	olcnt			; Save olcnt register
                  
-00006a ee40      Loop:	ldi		olcnt, 224		; load olcnt register
-00006b ee3d      OLoop:	ldi		ilcnt, 237		; load ilcnt register
-00006c 953a      ILoop:	dec		ilcnt			; decrement ilcnt
-00006d f7f1      		brne	ILoop			; Continue Inner Loop
-00006e 954a      		dec		olcnt		; decrement olcnt
-00006f f7d9      		brne	OLoop			; Continue Outer Loop
-000070 952a      		dec		waitcnt		; Decrement wait 
-000071 f7c1      		brne	Loop			; Continue Wait loop	
+000070 ee40      Loop:	ldi		olcnt, 224		; load olcnt register
+000071 ee3d      OLoop:	ldi		ilcnt, 237		; load ilcnt register
+000072 953a      ILoop:	dec		ilcnt			; decrement ilcnt
+000073 f7f1      		brne	ILoop			; Continue Inner Loop
+000074 954a      		dec		olcnt		; decrement olcnt
+000075 f7d9      		brne	OLoop			; Continue Outer Loop
+000076 952a      		dec		waitcnt		; Decrement wait 
+000077 f7c1      		brne	Loop			; Continue Wait loop	
                  
-000072 914f      		pop		olcnt		; Restore olcnt register
-000073 913f      		pop		ilcnt		; Restore ilcnt register
-000074 912f      		pop		waitcnt		; Restore wait register
-000075 9508      		ret				; Return from subroutine
+000078 914f      		pop		olcnt		; Restore olcnt register
+000079 913f      		pop		ilcnt		; Restore ilcnt register
+00007a 912f      		pop		waitcnt		; Restore wait register
+00007b 9508      		ret				; Return from subroutine
                  
                  
                  ;***********************************************************
@@ -1444,7 +1467,7 @@ C:\Users\nrpic_000\Documents\GitHub\ECE375\lab6\Lab6_Timers\Lab6_Timers\main.asm
                  		
                  		; Restore variables by popping from stack in reverse order
                  
-000076 9508      		ret						; End a function with RET
+00007c 9508      		ret						; End a function with RET
                  
                  ;***********************************************************
                  ;*	Stored Program Data
@@ -1473,14 +1496,14 @@ counted separately from r26..r31 here.
 "ATmega128" register use summary:
 r0 :   0 r1 :   0 r2 :   0 r3 :   0 r4 :   0 r5 :   0 r6 :   0 r7 :   0 
 r8 :   0 r9 :   0 r10:   0 r11:   0 r12:   0 r13:   0 r14:   0 r15:   0 
-r16:  18 r17:   6 r18:   3 r19:   4 r20:   4 r21:   0 r22:   0 r23:   0 
+r16:  22 r17:   7 r18:   5 r19:   4 r20:   4 r21:   0 r22:   0 r23:   0 
 r24:   0 r25:   0 r26:   0 r27:   0 r28:   0 r29:   0 r30:   0 r31:   0 
 x  :   0 y  :   0 z  :   0 
 Registers used: 5 out of 35 (14.3%)
 
 "ATmega128" instruction use summary:
 .lds  :   0 .sts  :   0 adc   :   0 add   :   0 adiw  :   0 and   :   0 
-andi  :   1 asr   :   0 bclr  :   0 bld   :   0 brbc  :   0 brbs  :   0 
+andi  :   2 asr   :   0 bclr  :   0 bld   :   0 brbc  :   0 brbs  :   0 
 brcc  :   0 brcs  :   0 break :   0 breq  :   2 brge  :   0 brhc  :   0 
 brhs  :   0 brid  :   0 brie  :   0 brlo  :   0 brlt  :   0 brmi  :   0 
 brne  :   3 brpl  :   0 brsh  :   0 brtc  :   0 brts  :   0 brvc  :   0 
@@ -1488,10 +1511,10 @@ brvs  :   0 bset  :   0 bst   :   0 call  :   2 cbi   :   0 cbr   :   0
 clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :   0 cls   :   0 
 clt   :   0 clv   :   0 clz   :   0 com   :   0 cp    :   0 cpc   :   0 
 cpi   :   2 cpse  :   0 dec   :   4 elpm  :   0 eor   :   0 fmul  :   0 
-fmuls :   0 fmulsu:   0 icall :   0 ijmp  :   0 in    :   3 inc   :   1 
-jmp   :   0 ld    :   0 ldd   :   0 ldi   :   9 lds   :   0 lpm   :   0 
+fmuls :   0 fmulsu:   0 icall :   0 ijmp  :   0 in    :   4 inc   :   1 
+jmp   :   0 ld    :   0 ldd   :   0 ldi   :  10 lds   :   0 lpm   :   0 
 lsl   :   0 lsr   :   0 mov   :   0 movw  :   0 mul   :   0 muls  :   0 
-mulsu :   0 neg   :   0 nop   :   1 or    :   1 ori   :   0 out   :   5 
+mulsu :   0 neg   :   0 nop   :   1 or    :   2 ori   :   0 out   :   7 
 pop   :   3 push  :   3 rcall :   0 ret   :   2 reti  :   0 rjmp  :   4 
 rol   :   0 ror   :   0 sbc   :   0 sbci  :   0 sbi   :   0 sbic  :   0 
 sbis  :   0 sbiw  :   0 sbr   :   0 sbrc  :   2 sbrs  :   0 sec   :   0 
@@ -1504,7 +1527,7 @@ Instructions used: 17 out of 114 (14.9%)
 "ATmega128" memory use summary [bytes]:
 Segment   Begin    End      Code   Data   Used    Size   Use%
 ---------------------------------------------------------------
-[.cseg] 0x000000 0x0000ee    100      0    100  131072   0.1%
+[.cseg] 0x000000 0x0000fa    112      0    112  131072   0.1%
 [.dseg] 0x000100 0x000100      0      0      0    4096   0.0%
 [.eseg] 0x000000 0x000000      0      0      0    4096   0.0%
 

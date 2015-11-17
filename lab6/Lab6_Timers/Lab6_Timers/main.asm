@@ -29,11 +29,18 @@
 .def	ilcnt = r19				; Inner Loop Counter
 .def	olcnt = r20				; Outer Loop Counter
 
-.equ	debounceTime = 10
+.equ	debounceTime = 20
 .equ	EngEnR = 4				; right Engine Enable Bit
 .equ	EngEnL = 7				; left Engine Enable Bit
 .equ	EngDirR = 5				; right Engine Direction Bit
 .equ	EngDirL = 6				; left Engine Direction Bit
+
+.equ	MovFwd = (1<<EngDirR|1<<EngDirL)	; Move Forwards Command
+.equ	MovBck = $00				; Move Backwards Command
+.equ	TurnR = (1<<EngDirL)			; Turn Right Command
+.equ	TurnL = (1<<EngDirR)			; Turn Left Command
+.equ	Halt = (1<<EngEnR|1<<EngEnL)		; Halt Command
+
 
 ;***********************************************************
 ;*	Start of Code Segment
@@ -71,15 +78,30 @@ INIT:
 		; Configure External Interrupts, if needed
 
 		; Configure 8-bit Timer/Counters
+		;LDI		mpr, 0b01111001 ;clk/0, Fast PWM, Set on compare, clear at top
+		;OUT		TCCR0, mpr
+		;OUT		TCCR2, mpr
+		;WGM: 11
 
 								; no prescaling
 
 		; Set TekBot to Move Forward (1<<EngDirR|1<<EngDirL)
+		;LDI		mpr, MovFwd
+		;OUT		PORTB, mpr
+		LDI		mpr, $00
+		OUT		PORTB, mpr
+
 
 		; Set initial speed, display on Port B
+		LDI		speedCnt, 10
+
+		IN		mpr, PORTB		;Read in the current state of PORTB
+		ANDI	mpr, $F0
+		OR		mpr, speedCnt	;OR PortB with our count (only possible lower nibble values)
+		OUT		PORTB, mpr		;Set the mpr to the output
 		
 		;speedCnt = 0;
-		LDI		speedCnt, $00	;Load a 0 into speedCnt (initial value)
+		;LDI		speedCnt, $00	;Load a 0 into speedCnt (initial value)
 ;		IN		mpr, PORTB		;Read in the current state of PORTB
 ;		OR		mpr, speedCnt	;OR PortB with our count (only possible lower nibble values)
 ;		OUT		PORTB, mpr		;Set the mpr to the output
@@ -98,7 +120,7 @@ MAIN:
 		;Process first button
 		CPI		speedCnt, $0F	;If the count is 15, do nothing (skip inc)
 		BREQ	TESTBUTTONTWO
-		LDI		mpr, debounceTime
+		LDI		waitcnt, debounceTime
 		CALL	Wait
 
 		INC		speedCnt		
@@ -111,7 +133,7 @@ TESTBUTTONTWO:
 		;Process 2nd button
 		CPI		speedCnt, $00   ;If the count is 0, do nothing (skip DEC)
 		BREQ	DONETESTING
-		LDI		mpr, debounceTime
+		LDI		waitcnt, debounceTime
 		CALL	Wait
 
 		DEC		speedCnt
@@ -122,6 +144,7 @@ DONETESTING:
 		ANDI	mpr, $F0
 		OR		mpr, speedCnt	;OR PortB with our count (only possible lower nibble values)
 		OUT		PORTB, mpr		;Set the mpr to the output
+
 
 		NOP
 END:
