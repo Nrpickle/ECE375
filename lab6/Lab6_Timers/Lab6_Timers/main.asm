@@ -1,10 +1,9 @@
 ;***********************************************************
 ;*
-;*	Enter Name of file here
+;*	Lab 6 Timer/Counter
 ;*
-;*	Enter the description of the program here
+;*	Provides different speed levels for the TekBot platform.
 ;*
-;*	This is the skeleton file Lab 6 of ECE 
 ;* PORT MAP
 ;* Port B, Pin 4 -> Output -> Right Motor Enable
 ;* Port B, Pin 5 -> Output -> Right Motor Direction
@@ -86,15 +85,13 @@ INIT:
 		LDI		mpr, 255
 		OUT		OCR0, mpr
 		OUT		OCR2, mpr
-		;WGM: 11
-
 
 		; Set TekBot to Move Forward (1<<EngDirR|1<<EngDirL)
 		LDI		mpr, MovFwd
 		OUT		PORTB, mpr
 
 
-		; Set initial speed, display on Port B
+		; Set initial duty cycle ("speed"), display on Port B
 		LDI		speedCnt, 0
 		LDI		speedDial, 0
 		OUT		OCR0, speedDial
@@ -109,12 +106,6 @@ INIT:
 		LDI		XL, LOW(SPEEDS<<1)
 		LDI		XH, HIGH(SPEEDS<<1)
 
-		;speedCnt = 0;
-		;LDI		speedCnt, $00	;Load a 0 into speedCnt (initial value)
-;		IN		mpr, PORTB		;Read in the current state of PORTB
-;		OR		mpr, speedCnt	;OR PortB with our count (only possible lower nibble values)
-;		OUT		PORTB, mpr		;Set the mpr to the output
-
 		; Enable global interrupts (if any are used)
 
 ;***********************************************************
@@ -122,29 +113,21 @@ INIT:
 ;***********************************************************
 MAIN:
 		;BUTTON 1 - INCREASE SPEED
-		; poll Port D pushbuttons (if needed)
 		IN		mpr, PIND
 		SBRC	mpr, 0		;Check the first button, if pressed, skip jump
 		RJMP	TESTBUTTONTWO
 		;Process first button
 		CPI		speedCnt, $0F	;If the count is 15, do nothing (skip inc)
 		BREQ	ENDTESTBUTTONONE
-		LDI		waitcnt, debounceTime
-		CALL	Wait
+		LDI		waitcnt, debounceTime 
+		CALL	Wait			;Wait 20ms (debouncing)
 
-		INC		speedCnt
-		LDI		mpr, 17
-		ADD		speedDial, mpr
+		INC		speedCnt		;Increment the speedCnt
+		LDI		mpr, 17			
+		ADD		speedDial, mpr	;Increment the speed by 17 (255/15)
 ENDTESTBUTTONONE:
 		OUT		OCR0, speedDial
 		OUT		OCR2, speedDial
-
-
-
-;		ADIW	XH:XL, 1
-;		LD		mpr, X
-;		OUT		OCR0, mpr
-;		OUT		OCR2, mpr
 
 
 		;BUTTON 2 - DECREASE SPEED
@@ -155,12 +138,12 @@ TESTBUTTONTWO:
 		;Process 2nd button
 		CPI		speedCnt, $00   ;If the count is 0, skip DEC
 		BREQ	ENDTESTBUTTONTWO
-		LDI		waitcnt, debounceTime
-		CALL	Wait
+		LDI		waitcnt, debounceTime	
+		CALL	Wait			;Wait 20ms (debouncing)
 
-		DEC		speedCnt
+		DEC		speedCnt		;Increment the speedCnt
 
-		SUBI	speedDial, 17
+		SUBI	speedDial, 17	;Increment the speed by 17 (255/15)
 ENDTESTBUTTONTWO:
 		OUT		OCR0, speedDial
 		OUT		OCR2, speedDial
@@ -173,14 +156,14 @@ DONETESTING:
 		OR		mpr, speedCnt	;OR PortB with our count (only possible lower nibble values)
 		OUT		PORTB, mpr		;Set the mpr to the output
 
-
 		NOP
 END:
 		rjmp	MAIN			; return to top of MAIN
 
 
-; if pressed, adjust speed
-								; also, adjust speed indication
+;***********************************************************
+;*	Functions and Subroutines
+;***********************************************************
 
 ;----------------------------------------------------------------
 ; Sub:	Wait
@@ -210,36 +193,4 @@ ILoop:	dec		ilcnt			; decrement ilcnt
 		ret				; Return from subroutine
 
 
-;***********************************************************
-;*	Functions and Subroutines
-;***********************************************************
 
-;***********************************************************
-;*	Func: Template function header
-;*	Desc: Cut and paste this and fill in the info at the 
-;*		  beginning of your functions
-;-----------------------------------------------------------
-FUNC:	; Begin a function with a label
-
-		; Save variables by pushing them to the stack
-
-		; Execute the function here
-		
-		; Restore variables by popping from stack in reverse order
-
-		ret						; End a function with RET
-
-;***********************************************************
-;*	Stored Program Data
-;***********************************************************
-		; Enter any stored data you might need here
-
-
-SPEEDS: 
-;.DB 0, 17, 34, 51, 68, 85, 102, 136, 153, 170, 187, 204, 221, 238, 255
-SPEEDS_END:
-
-;***********************************************************
-;*	Additional Program Includes
-;***********************************************************
-		; There are no additional file includes for this program
