@@ -1,0 +1,32 @@
+<ASSEMBLER_INFO>
+ <VERSION>2.1.57</VERSION>
+ <DEVICE>"ATmega128"</DEVICE>
+ <WORKING_DIR>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\Debug</WORKING_DIR>
+ <INCLUDE_PATH>
+  <DIR>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\avrasm\inc</DIR>
+  <DIR>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\avrasm\inc</DIR>
+  <DIR>C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avrassembler\Include</DIR>
+  <DIR></DIR>
+ </INCLUDE_PATH>
+ <SOURCE_FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</SOURCE_FILE>
+ <INCLUDED_FILES>
+  <FILE>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\avrasm\inc\m128def.inc</FILE>
+ </INCLUDED_FILES>
+ <OBJECT_FILES>
+  <FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\Debug\Lab7_ROV.obj</FILE>
+ </OBJECT_FILES>
+ <HEX_FILES>
+  <FILE>Lab7_ROV.hex</FILE>
+ </HEX_FILES>
+ <OUTPUT_FILES>
+  <FILE>Lab7_ROV.map</FILE>
+  <FILE>Lab7_ROV.lss</FILE>
+ </OUTPUT_FILES>
+ <LABELS>
+  <INIT><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>70</LINE></INIT>
+  <MAIN><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>88</LINE></MAIN>
+  <MAIN_REMOTE><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>98</LINE></MAIN_REMOTE>
+  <MAIN_INTERFACE><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>100</LINE></MAIN_INTERFACE>
+  <MAIN_RECIEVER><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>102</LINE></MAIN_RECIEVER>
+ </LABELS>
+</ASSEMBLER_INFO>
