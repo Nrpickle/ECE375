@@ -1,0 +1,30 @@
+Lab 7 Planning Document
+
+Use same code for both, just with a define different?
+
+Setup:
+
+- Stack pointer
+- Configure I/O 
+    The 2 LSBs need to be inputs for the bumper, and the upper 6 MSBs should be input for the remote, B/C the input for the bumbers need to have interrupts attached to them.]
+- Configure internal timer/counter interrupt
+- Configure USART
+
+Device ID determines where the main code is executed
+
+Sending 128:
+
+On button press, add appropriate two bytes to buffer, debounce (wait)
+
+adding bytes to buffer, busy wait until first is sent, then send second; assume that the debounce wait will take care of the delay for the second.
+
+Receive 128:
+6 actions needed on recipient robot
+
+Forward: Macro
+Backward: Macro
+Turn Right: Subroutine
+  Needs to go backward with one motor for X time
+Turn Left: Subroutine
+  Needs to go backward with one motor for X time
+Halt : Macro
