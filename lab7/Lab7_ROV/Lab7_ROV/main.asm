@@ -39,6 +39,7 @@
 .equ	remoteWaitTime = 20
 .equ	robotWaitTime = 20
 .equ	freezeTime = 250
+.equ	WTime = 100				; Bumper wait time
 .equ	EngEnR = 4				; right Engine Enable Bit
 .equ	EngEnL = 7				; left Engine Enable Bit
 .equ	EngDirR = 5				; right Engine Direction Bit
@@ -237,8 +238,22 @@ MAIN_REMOTE_LOOP2:
 MAIN_INTERFACE:
 	NOP
 
+
+	;First, we need to check for bumpers. If the buttons are pressed, then
+	;we want to run the according command, then parse parse the most recent instruction recieved
+	IN		mpr, PIND
+	SBRS	mpr, 1			;Button 1 press
+	CALL	HitLeft
+	SBRS	mpr, 0			;Button 2 press
+	CALL	HitRight
+
+	;Now we want to put the temp stuff actually into the parsing register
+	;This prevents any funkiness with interrupts overriding values that
+	;we are currently using
 	MOV		rx_deviceid, rx_deviceid_temp
 	MOV		rx_actioncode, rx_actioncode_temp
+
+	
 	
 	;LDI		mpr, cmd_freeze
 	;CP		mpr , rx_actioncode
@@ -410,7 +425,77 @@ ILoop:	dec		ilcnt			; decrement ilcnt
 		pop		waitcnt		; Restore wait register
 		ret				; Return from subroutine
 
+;----------------------------------------------------------------
+; Sub:	HitRight
+; Desc:	Handles functionality of the TekBot when the right whisker
+;		is triggered.
+;----------------------------------------------------------------
+HitRight:
+		push	mpr			; Save mpr register
+		push	waitcnt			; Save wait register
+		in		mpr, SREG	; Save program state
+		push	mpr			;
 
+		; Move Backwards for a second
+		ldi		mpr, MovBck	; Load Move Backwards command
+		out		PORTB, mpr	; Send command to port
+		ldi		waitcnt, WTime	; Wait for 1 second
+		rcall	Wait			; Call wait function
+
+		; Turn left for a second
+		ldi		mpr, TurnL	; Load Turn Left Command
+		out		PORTB, mpr	; Send command to port
+		ldi		waitcnt, WTime	; Wait for 1 second
+		rcall	Wait			; Call wait function
+		ldi		waitcnt, WTime	; Wait for 1 second
+		rcall	Wait
+
+		; Move Forward again	
+		ldi		mpr, MovFwd	; Load Move Forwards command
+		out		PORTB, mpr	; Send command to port
+
+		pop		mpr		; Restore program state
+		out		SREG, mpr	;
+		pop		waitcnt		; Restore wait register
+		pop		mpr		; Restore mpr
+		ret				; Return from subroutine
+
+
+;----------------------------------------------------------------
+; Sub:	HitLeft
+; Desc:	Handles functionality of the TekBot when the left whisker
+;		is triggered.
+;----------------------------------------------------------------
+HitLeft:
+		push	mpr			; Save mpr register
+		push	waitcnt			; Save wait register
+		in		mpr, SREG	; Save program state
+		push	mpr			;
+
+		; Move Backwards for a second
+		ldi		mpr, MovBck	; Load Move Backwards command
+		out		PORTB, mpr	; Send command to port
+		ldi		waitcnt, WTime	; Wait for 1 second
+		rcall	Wait			; Call wait function
+		ldi		waitcnt, WTime	; Wait for 1 second
+		rcall	Wait			; Call wait function
+
+
+		; Turn right for a second
+		ldi		mpr, TurnR	; Load Turn Left Command
+		out		PORTB, mpr	; Send command to port
+		ldi		waitcnt, WTime	; Wait for 1 second
+		rcall	Wait			; Call wait function
+
+		; Move Forward again	
+		ldi		mpr, MovFwd	; Load Move Forwards command
+		out		PORTB, mpr	; Send command to port
+
+		pop		mpr		; Restore program state
+		out		SREG, mpr	;
+		pop		waitcnt		; Restore wait register
+		pop		mpr		; Restore mpr
+		ret				; Return from subroutine
 
 
 

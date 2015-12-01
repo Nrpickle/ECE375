@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.1.57  C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm Tue Dec 01 13:16:32 2015
+AVRASM ver. 2.1.57  C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm Tue Dec 01 13:24:16 2015
 
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\avrasm\inc\m128def.inc'
 C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm(20): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\avrasm\inc\m128def.inc'
@@ -1306,6 +1306,7 @@ C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm(20): 
                  .equ	remoteWaitTime = 20
                  .equ	robotWaitTime = 20
                  .equ	freezeTime = 250
+                 .equ	WTime = 100				; Bumper wait time
                  .equ	EngEnR = 4				; right Engine Enable Bit
                  .equ	EngEnL = 7				; left Engine Enable Bit
                  .equ	EngDirR = 5				; right Engine Direction Bit
@@ -1351,7 +1352,7 @@ C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm(20): 
 000000 c045      		rjmp	INIT			; reset interrupt
                  
                  .org	$003C
-00003c c0b0      		rjmp		ISR_RX_COMPLETE
+00003c c0b7      		rjmp		ISR_RX_COMPLETE
                  		; place instructions in interrupt vectors here, if needed
                  
                  .org	$0046					; end of interrupt vectors
@@ -1418,7 +1419,7 @@ C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm(20): 
 000065 fd05      	SBRC	mpr, 5  ;Check bit 5 to see if device is an interface robot
 000066 940c 00a8 	jmp		MAIN_INTERFACE
 000068 fd04      	SBRC	mpr, 4  ;Check bit 4 to see if device is a reciever robot
-000069 940c 00e9 	jmp		MAIN_RECIEVER
+000069 940c 00f0 	jmp		MAIN_RECIEVER
                  
                  MAIN_REMOTE:
 00006b e000      	LDI		mpr, $00   ;test
@@ -1492,7 +1493,7 @@ C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm(20): 
 0000a2 ef0f      	LDI		mpr, $FF   ;test
 0000a3 bb08      	OUT		PORTB, mpr ;test
 0000a4 e124      	LDI		waitCnt, remoteWaitTime	;test
-0000a5 940e 00f9 	CALL	Wait					;test
+0000a5 940e 0100 	CALL	Wait					;test
                  
 0000a7 cfc3      	rjmp	MAIN_REMOTE
                  
@@ -1504,36 +1505,50 @@ C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm(20): 
                  MAIN_INTERFACE:
 0000a8 0000      	NOP
                  
-0000a9 2c59      	MOV		rx_deviceid, rx_deviceid_temp
-0000aa 2c6a      	MOV		rx_actioncode, rx_actioncode_temp
+                 
+                 	;First, we need to check for bumpers. If the buttons are pressed, then
+                 	;we want to run the according command, then parse parse the most recent instruction recieved
+0000a9 b300      	IN		mpr, PIND
+0000aa ff01      	SBRS	mpr, 1			;Button 1 press
+0000ab 940e 0124 	CALL	HitLeft
+0000ad ff00      	SBRS	mpr, 0			;Button 2 press
+0000ae 940e 010f 	CALL	HitRight
+                 
+                 	;Now we want to put the temp stuff actually into the parsing register
+                 	;This prevents any funkiness with interrupts overriding values that
+                 	;we are currently using
+0000b0 2c59      	MOV		rx_deviceid, rx_deviceid_temp
+0000b1 2c6a      	MOV		rx_actioncode, rx_actioncode_temp
+                 
+                 	
                  	
                  	;LDI		mpr, cmd_freeze
                  	;CP		mpr , rx_actioncode
                  	;BREQ	MAIN_INTERFACE_RECEIVE_FREEZE
                  
                  	;Check if "my" id has been recieved
-0000ab e207      	LDI		mpr, DeviceID
-0000ac 1650      	CP		rx_deviceid, mpr	;Compare the recieved device ID to the current id
+0000b2 e207      	LDI		mpr, DeviceID
+0000b3 1650      	CP		rx_deviceid, mpr	;Compare the recieved device ID to the current id
                  								;if it doesn't match, then restart this part of the
-0000ad f7d1      	BRNE	MAIN_INTERFACE		;program
+0000b4 f799      	BRNE	MAIN_INTERFACE		;program
                  
                  	;If we've reached this point, we can assume that we are working with a valid command
                  	;Check if an "all robot freeze" command has been recieved
-0000ae e80f      	LDI		mpr, $8F
-0000af 1660      	CP		rx_actioncode, mpr
-0000b0 f041      	BREQ	MAIN_INTERFACE_RECEIVE_FREEZE
+0000b5 e80f      	LDI		mpr, $8F
+0000b6 1660      	CP		rx_actioncode, mpr
+0000b7 f041      	BREQ	MAIN_INTERFACE_RECEIVE_FREEZE
                  
                  
-0000b1 2d06      	MOV		mpr, rx_actioncode
+0000b8 2d06      	MOV		mpr, rx_actioncode
                  	;We need to find out if the command was to send a freeze command
-0000b2 3f08      	CPI		mpr, cmd_freeze				;If the command recieved was the freeze command,
-0000b3 f0a9      	BREQ	MAIN_INTERFACE_SEND_FREEZE  ;branch to the send freeze command branch
+0000b9 3f08      	CPI		mpr, cmd_freeze				;If the command recieved was the freeze command,
+0000ba f0a9      	BREQ	MAIN_INTERFACE_SEND_FREEZE  ;branch to the send freeze command branch
                  	;Else, we need to output to the motors
                  
-0000b4 0f00      	LSL		mpr						;Rotate left to get an actual motor command
-0000b5 bb08      	OUT		PORTB, mpr				;Output actual motor command to the motors
-0000b6 2e70      	MOV		previousMotorCommand, mpr	;Store this value into our storage register
-0000b7 2c86      	MOV		previousActionCode, rx_actioncode
+0000bb 0f00      	LSL		mpr						;Rotate left to get an actual motor command
+0000bc bb08      	OUT		PORTB, mpr				;Output actual motor command to the motors
+0000bd 2e70      	MOV		previousMotorCommand, mpr	;Store this value into our storage register
+0000be 2c86      	MOV		previousActionCode, rx_actioncode
                  
                  	;LDI		mpr, $FF
                  	;OUT		PORTB, mpr
@@ -1545,110 +1560,110 @@ C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm(20): 
                  	;MOV		mpr, previousMotorCommand
                  	;OUT		PORTB, mpr
                  
-0000b8 cfef      	rjmp	MAIN_INTERFACE ;Return to top of program
+0000bf cfe8      	rjmp	MAIN_INTERFACE ;Return to top of program
                  
                  MAIN_INTERFACE_RECEIVE_FREEZE:
-0000b9 94f8      	CLI		;We don't want anything else going on
+0000c0 94f8      	CLI		;We don't want anything else going on
                  
-0000ba e900      	LDI		mpr, Halt  ;stop the robot
-0000bb bb08      	OUT		PORTB, mpr
+0000c1 e900      	LDI		mpr, Halt  ;stop the robot
+0000c2 bb08      	OUT		PORTB, mpr
                  
                  	;Wait for 5 seconds... [TODO: Replace with timers!]
-0000bc ef2a      	LDI		waitCnt, freezeTime
-0000bd 940e 00f9 	CALL	Wait
-0000bf ef2a      	LDI		waitCnt, freezeTime
-0000c0 940e 00f9 	CALL	Wait
+0000c3 ef2a      	LDI		waitCnt, freezeTime
+0000c4 940e 0100 	CALL	Wait
+0000c6 ef2a      	LDI		waitCnt, freezeTime
+0000c7 940e 0100 	CALL	Wait
                  
                  	;Output previously valid motor command to the freeze
-0000c2 e505      	LDI		mpr, $55	;DEBUG
-0000c3 bb08      	OUT		PORTB, mpr	;DEBUG
+0000c9 e505      	LDI		mpr, $55	;DEBUG
+0000ca bb08      	OUT		PORTB, mpr	;DEBUG
                  	;OUT		PORTB, previousMotorCommand
-0000c4 2c68      	MOV		rx_actioncode, previousActionCode
-0000c5 e207      	LDI		mpr, DeviceID
-0000c6 2e50      	MOV		rx_deviceid, mpr
+0000cb 2c68      	MOV		rx_actioncode, previousActionCode
+0000cc e207      	LDI		mpr, DeviceID
+0000cd 2e50      	MOV		rx_deviceid, mpr
                  
-0000c7 9478      	SEI		;Return interrupts to normal operation
-0000c8 cfdf      	rjmp	MAIN_INTERFACE
+0000ce 9478      	SEI		;Return interrupts to normal operation
+0000cf cfd8      	rjmp	MAIN_INTERFACE
                  
                  MAIN_INTERFACE_SEND_FREEZE:  ;process the freeze command
                  	;Gotsta do the freeze stuff!
-0000c9 94f8      	CLI			;We don't want to recieve our own freeze command
+0000d0 94f8      	CLI			;We don't want to recieve our own freeze command
                  	;Configure USART to not receive
-0000ca e008      	LDI		mpr, (1<<TXEN1) 
-0000cb 9300 009a 	STS		UCSR1B, mpr     ;Enable TX ONLY (disable RX)
+0000d1 e008      	LDI		mpr, (1<<TXEN1) 
+0000d2 9300 009a 	STS		UCSR1B, mpr     ;Enable TX ONLY (disable RX)
                  
                  MAIN_INTERFACE_SEND_FREEZE_LOOP:
-0000cd 9100 009b 	LDS		mpr, UCSR1A
-0000cf ff05      	SBRS	mpr, UDRE1
-0000d0 cffc      	rjmp	MAIN_INTERFACE_SEND_FREEZE_LOOP
-                 
-0000d1 e203      	LDI		mpr, targetRobotID
-                 
-0000d2 9300 009c 	STS		UDR1, mpr
-                 
-                 MAIN_INTERFACE_SEND_FREEZE_LOOP2:
 0000d4 9100 009b 	LDS		mpr, UCSR1A
 0000d6 ff05      	SBRS	mpr, UDRE1
-0000d7 cffc      	rjmp	MAIN_INTERFACE_SEND_FREEZE_LOOP2
+0000d7 cffc      	rjmp	MAIN_INTERFACE_SEND_FREEZE_LOOP
+                 
+0000d8 e203      	LDI		mpr, targetRobotID
+                 
+0000d9 9300 009c 	STS		UDR1, mpr
+                 
+                 MAIN_INTERFACE_SEND_FREEZE_LOOP2:
+0000db 9100 009b 	LDS		mpr, UCSR1A
+0000dd ff05      	SBRS	mpr, UDRE1
+0000de cffc      	rjmp	MAIN_INTERFACE_SEND_FREEZE_LOOP2
                  
                  	;Actually send command
-0000d8 e80f      	LDI		mpr, $8F		;By convention, all zeros is an "all robot"
+0000df e80f      	LDI		mpr, $8F		;By convention, all zeros is an "all robot"
                  							;freeze command
-0000d9 9300 009c 	STS		UDR1, mpr
+0000e0 9300 009c 	STS		UDR1, mpr
                  
                  	;We don't want to send freeze forever, so load the previous command and proceess
                  	;it the next iteration through MAIN_INTERFACE
-0000db 2ca8      	MOV		rx_actioncode_temp, previousActionCode
-0000dc e207      	LDI		mpr, DeviceID
-0000dd 2e90      	MOV		rx_deviceid_temp, mpr
+0000e2 2ca8      	MOV		rx_actioncode_temp, previousActionCode
+0000e3 e207      	LDI		mpr, DeviceID
+0000e4 2e90      	MOV		rx_deviceid_temp, mpr
                  	
-0000de e104      	LDI		mpr, robotWaitTime
-0000df 2f20      	MOV		waitCnt, mpr
-0000e0 940e 00f9 	CALL	Wait
+0000e5 e104      	LDI		mpr, robotWaitTime
+0000e6 2f20      	MOV		waitCnt, mpr
+0000e7 940e 0100 	CALL	Wait
                  
-0000e2 0000      	NOP  ;Couplea NOPs for good measure
-0000e3 0000      	NOP
+0000e9 0000      	NOP  ;Couplea NOPs for good measure
+0000ea 0000      	NOP
                  	
                  	;Renable RX USART
-0000e4 e908      	LDI		mpr, (1<<RXCIE1) | (1<<RXEN1) | (1<<TXEN1) ;0b11011000
-0000e5 9300 009a 	STS		UCSR1B, mpr     ;Enable RX, TX, Reciever, Transmitter
+0000eb e908      	LDI		mpr, (1<<RXCIE1) | (1<<RXEN1) | (1<<TXEN1) ;0b11011000
+0000ec 9300 009a 	STS		UCSR1B, mpr     ;Enable RX, TX, Reciever, Transmitter
                  
-0000e7 9478      	SEI			;Reenable freezing
-0000e8 cfbf      	rjmp	MAIN_INTERFACE
+0000ee 9478      	SEI			;Reenable freezing
+0000ef cfb8      	rjmp	MAIN_INTERFACE
                  
                  ; ----------------------------
                  ; END OF MAIN_INTERFACE
                  ; ----------------------------
                  
                  MAIN_RECIEVER:
-0000e9 0000      	NOP
+0000f0 0000      	NOP
                  
-0000ea cffe      	rjmp	MAIN_RECIEVER
+0000f1 cffe      	rjmp	MAIN_RECIEVER
                  
-0000eb 940c 0062     jmp MAIN
+0000f2 940c 0062     jmp MAIN
                  
                  
                  
                  ISR_RX_COMPLETE:
-0000ed 930f      	PUSH	mpr
+0000f4 930f      	PUSH	mpr
                  
-0000ee 9100 009c 	LDS		mpr, UDR1	;Load the RX'd data into mpr
-0000f0 ff07      	SBRS	mpr, 7		;Check if "Action Code"
-0000f1 c001      	rjmp	DeviceIDLoad
-0000f2 c002      	rjmp	ActionCodeLoad
+0000f5 9100 009c 	LDS		mpr, UDR1	;Load the RX'd data into mpr
+0000f7 ff07      	SBRS	mpr, 7		;Check if "Action Code"
+0000f8 c001      	rjmp	DeviceIDLoad
+0000f9 c002      	rjmp	ActionCodeLoad
                  
                  DeviceIDLoad:
-0000f3 2e90      	mov		rx_deviceid_temp, mpr
-0000f4 c002      	rjmp	ISR_RX_END
+0000fa 2e90      	mov		rx_deviceid_temp, mpr
+0000fb c002      	rjmp	ISR_RX_END
                  ActionCodeLoad:
-0000f5 2ea0      	mov		rx_actioncode_temp, mpr
-0000f6 c000      	rjmp	ISR_RX_END
+0000fc 2ea0      	mov		rx_actioncode_temp, mpr
+0000fd c000      	rjmp	ISR_RX_END
                  	
                  
                  ISR_RX_END:
-0000f7 910f      	POP		mpr
+0000fe 910f      	POP		mpr
                  
-0000f8 9518      	RETI
+0000ff 9518      	RETI
                  
                  ;----------------------------------------------------------------
                  ; Sub:	Wait
@@ -1659,25 +1674,95 @@ C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm(20): 
                  ;			((3 * ilcnt + 3) * olcnt + 3) * waitcnt + 13 + call
                  ;----------------------------------------------------------------
                  Wait:
-0000f9 932f      		push	waitcnt			; Save wait register
-0000fa 933f      		push	ilcnt			; Save ilcnt register
-0000fb 934f      		push	olcnt			; Save olcnt register
+000100 932f      		push	waitcnt			; Save wait register
+000101 933f      		push	ilcnt			; Save ilcnt register
+000102 934f      		push	olcnt			; Save olcnt register
                  
-0000fc ee40      Loop:	ldi		olcnt, 224		; load olcnt register
-0000fd ee3d      OLoop:	ldi		ilcnt, 237		; load ilcnt register
-0000fe 953a      ILoop:	dec		ilcnt			; decrement ilcnt
-0000ff f7f1      		brne	ILoop			; Continue Inner Loop
-000100 954a      		dec		olcnt		; decrement olcnt
-000101 f7d9      		brne	OLoop			; Continue Outer Loop
-000102 952a      		dec		waitcnt		; Decrement wait 
-000103 f7c1      		brne	Loop			; Continue Wait loop	
+000103 ee40      Loop:	ldi		olcnt, 224		; load olcnt register
+000104 ee3d      OLoop:	ldi		ilcnt, 237		; load ilcnt register
+000105 953a      ILoop:	dec		ilcnt			; decrement ilcnt
+000106 f7f1      		brne	ILoop			; Continue Inner Loop
+000107 954a      		dec		olcnt		; decrement olcnt
+000108 f7d9      		brne	OLoop			; Continue Outer Loop
+000109 952a      		dec		waitcnt		; Decrement wait 
+00010a f7c1      		brne	Loop			; Continue Wait loop	
                  
-000104 914f      		pop		olcnt		; Restore olcnt register
-000105 913f      		pop		ilcnt		; Restore ilcnt register
-000106 912f      		pop		waitcnt		; Restore wait register
-000107 9508      		ret				; Return from subroutine
+00010b 914f      		pop		olcnt		; Restore olcnt register
+00010c 913f      		pop		ilcnt		; Restore ilcnt register
+00010d 912f      		pop		waitcnt		; Restore wait register
+00010e 9508      		ret				; Return from subroutine
+                 
+                 ;----------------------------------------------------------------
+                 ; Sub:	HitRight
+                 ; Desc:	Handles functionality of the TekBot when the right whisker
+                 ;		is triggered.
+                 ;----------------------------------------------------------------
+                 HitRight:
+00010f 930f      		push	mpr			; Save mpr register
+000110 932f      		push	waitcnt			; Save wait register
+000111 b70f      		in		mpr, SREG	; Save program state
+000112 930f      		push	mpr			;
+                 
+                 		; Move Backwards for a second
+000113 e000      		ldi		mpr, MovBck	; Load Move Backwards command
+000114 bb08      		out		PORTB, mpr	; Send command to port
+000115 e624      		ldi		waitcnt, WTime	; Wait for 1 second
+000116 dfe9      		rcall	Wait			; Call wait function
+                 
+                 		; Turn left for a second
+000117 e200      		ldi		mpr, TurnL	; Load Turn Left Command
+000118 bb08      		out		PORTB, mpr	; Send command to port
+000119 e624      		ldi		waitcnt, WTime	; Wait for 1 second
+00011a dfe5      		rcall	Wait			; Call wait function
+00011b e624      		ldi		waitcnt, WTime	; Wait for 1 second
+00011c dfe3      		rcall	Wait
+                 
+                 		; Move Forward again	
+00011d e600      		ldi		mpr, MovFwd	; Load Move Forwards command
+00011e bb08      		out		PORTB, mpr	; Send command to port
+                 
+00011f 910f      		pop		mpr		; Restore program state
+000120 bf0f      		out		SREG, mpr	;
+000121 912f      		pop		waitcnt		; Restore wait register
+000122 910f      		pop		mpr		; Restore mpr
+000123 9508      		ret				; Return from subroutine
                  
                  
+                 ;----------------------------------------------------------------
+                 ; Sub:	HitLeft
+                 ; Desc:	Handles functionality of the TekBot when the left whisker
+                 ;		is triggered.
+                 ;----------------------------------------------------------------
+                 HitLeft:
+000124 930f      		push	mpr			; Save mpr register
+000125 932f      		push	waitcnt			; Save wait register
+000126 b70f      		in		mpr, SREG	; Save program state
+000127 930f      		push	mpr			;
+                 
+                 		; Move Backwards for a second
+000128 e000      		ldi		mpr, MovBck	; Load Move Backwards command
+000129 bb08      		out		PORTB, mpr	; Send command to port
+00012a e624      		ldi		waitcnt, WTime	; Wait for 1 second
+00012b dfd4      		rcall	Wait			; Call wait function
+00012c e624      		ldi		waitcnt, WTime	; Wait for 1 second
+00012d dfd2      		rcall	Wait			; Call wait function
+                 
+                 
+                 		; Turn right for a second
+00012e e400      		ldi		mpr, TurnR	; Load Turn Left Command
+00012f bb08      		out		PORTB, mpr	; Send command to port
+000130 e624      		ldi		waitcnt, WTime	; Wait for 1 second
+000131 dfce      		rcall	Wait			; Call wait function
+                 
+                 		; Move Forward again	
+000132 e600      		ldi		mpr, MovFwd	; Load Move Forwards command
+000133 bb08      		out		PORTB, mpr	; Send command to port
+                 
+000134 910f      		pop		mpr		; Restore program state
+000135 bf0f      		out		SREG, mpr	;
+000136 912f      		pop		waitcnt		; Restore wait register
+000137 910f      		pop		mpr		; Restore mpr
+000138 9508      		ret				; Return from subroutine
                  
                  
                  
@@ -1700,7 +1785,7 @@ counted separately from r26..r31 here.
 "ATmega128" register use summary:
 r0 :   0 r1 :   0 r2 :   0 r3 :   0 r4 :   0 r5 :   3 r6 :   5 r7 :   2 
 r8 :   3 r9 :   4 r10:   4 r11:   0 r12:   0 r13:   0 r14:   0 r15:   0 
-r16:  85 r17:   0 r18:   7 r19:   4 r20:   4 r21:   8 r22:   0 r23:   0 
+r16: 112 r17:   0 r18:  17 r19:   4 r20:   4 r21:   8 r22:   0 r23:   0 
 r24:   0 r25:   0 r26:   0 r27:   0 r28:   0 r29:   0 r30:   0 r31:   0 
 x  :   0 y  :   0 z  :   0 
 Registers used: 11 out of 35 (31.4%)
@@ -1711,27 +1796,27 @@ andi  :   1 asr   :   0 bclr  :   0 bld   :   0 brbc  :   0 brbs  :   0
 brcc  :   0 brcs  :   0 break :   0 breq  :   3 brge  :   0 brhc  :   0 
 brhs  :   0 brid  :   0 brie  :   0 brlo  :   0 brlt  :   0 brmi  :   0 
 brne  :   4 brpl  :   0 brsh  :   0 brtc  :   0 brts  :   0 brvc  :   0 
-brvs  :   0 bset  :   0 bst   :   0 call  :   4 cbi   :   0 cbr   :   0 
+brvs  :   0 bset  :   0 bst   :   0 call  :   6 cbi   :   0 cbr   :   0 
 clc   :   0 clh   :   0 cli   :   2 cln   :   0 clr   :   1 cls   :   0 
 clt   :   0 clv   :   0 clz   :   0 com   :   1 cp    :   2 cpc   :   0 
 cpi   :   1 cpse  :   0 dec   :   3 elpm  :   0 eor   :   0 fmul  :   0 
-fmuls :   0 fmulsu:   0 icall :   0 ijmp  :   0 in    :   2 inc   :   0 
-jmp   :   3 ld    :   0 ldd   :   0 ldi   :  37 lds   :   5 lpm   :   0 
+fmuls :   0 fmulsu:   0 icall :   0 ijmp  :   0 in    :   5 inc   :   0 
+jmp   :   3 ld    :   0 ldd   :   0 ldi   :  49 lds   :   5 lpm   :   0 
 lsl   :   1 lsr   :   0 mov   :  15 movw  :   0 mul   :   0 muls  :   0 
-mulsu :   0 neg   :   0 nop   :  24 or    :   0 ori   :   0 out   :   9 
-pop   :   4 push  :   4 rcall :   0 ret   :   1 reti  :   1 rjmp  :  17 
+mulsu :   0 neg   :   0 nop   :  24 or    :   0 ori   :   0 out   :  17 
+pop   :  10 push  :  10 rcall :   6 ret   :   3 reti  :   1 rjmp  :  17 
 rol   :   0 ror   :   0 sbc   :   0 sbci  :   0 sbi   :   0 sbic  :   0 
-sbis  :   0 sbiw  :   0 sbr   :   0 sbrc  :   3 sbrs  :  13 sec   :   0 
+sbis  :   0 sbiw  :   0 sbr   :   0 sbrc  :   3 sbrs  :  15 sec   :   0 
 seh   :   0 sei   :   3 sen   :   0 ser   :   0 ses   :   0 set   :   0 
 sev   :   0 sez   :   0 sleep :   0 spm   :   0 st    :   0 std   :   0 
 sts   :  10 sub   :   0 subi  :   0 swap  :   0 tst   :   0 wdr   :   0 
 
-Instructions used: 27 out of 114 (23.7%)
+Instructions used: 28 out of 114 (24.6%)
 
 "ATmega128" memory use summary [bytes]:
 Segment   Begin    End      Code   Data   Used    Size   Use%
 ---------------------------------------------------------------
-[.cseg] 0x000000 0x000210    392      0    392  131072   0.3%
+[.cseg] 0x000000 0x000272    490      0    490  131072   0.4%
 [.dseg] 0x000100 0x000100      0      0      0    4096   0.0%
 [.eseg] 0x000000 0x000000      0      0      0    4096   0.0%
 
