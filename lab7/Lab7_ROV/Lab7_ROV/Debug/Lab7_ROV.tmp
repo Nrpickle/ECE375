@@ -23,10 +23,15 @@
   <FILE>Lab7_ROV.lss</FILE>
  </OUTPUT_FILES>
  <LABELS>
-  <INIT><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>70</LINE></INIT>
-  <MAIN><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>88</LINE></MAIN>
-  <MAIN_REMOTE><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>98</LINE></MAIN_REMOTE>
-  <MAIN_INTERFACE><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>100</LINE></MAIN_INTERFACE>
-  <MAIN_RECIEVER><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>102</LINE></MAIN_RECIEVER>
+  <INIT><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>71</LINE></INIT>
+  <ISR_RX_COMPLETE><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>148</LINE></ISR_RX_COMPLETE>
+  <MAIN><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>111</LINE></MAIN>
+  <MAIN_REMOTE><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>121</LINE></MAIN_REMOTE>
+  <MAIN_INTERFACE><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>125</LINE></MAIN_INTERFACE>
+  <MAIN_RECIEVER><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>139</LINE></MAIN_RECIEVER>
+  <Wait><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>167</LINE></Wait>
+  <Loop><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>172</LINE></Loop>
+  <OLoop><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>173</LINE></OLoop>
+  <ILoop><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>174</LINE></ILoop>
  </LABELS>
 </ASSEMBLER_INFO>

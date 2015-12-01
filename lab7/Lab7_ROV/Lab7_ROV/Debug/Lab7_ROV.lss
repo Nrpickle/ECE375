@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.1.57  C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm Sun Nov 29 01:31:31 2015
+AVRASM ver. 2.1.57  C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm Mon Nov 30 17:44:55 2015
 
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\avrasm\inc\m128def.inc'
 C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm(20): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\avrasm\inc\m128def.inc'
@@ -1294,9 +1294,8 @@ C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm(20): 
                  .def	waitcnt = r18
                  .def	ilcnt = r19				; Inner Loop Counter
                  .def	olcnt = r20				; Outer Loop Counter
-                 .def	speedDial = r21
                  
-                 .equ	debounceTime = 20
+                 .equ	waitTime = 20
                  .equ	EngEnR = 4				; right Engine Enable Bit
                  .equ	EngEnL = 7				; left Engine Enable Bit
                  .equ	EngDirR = 5				; right Engine Direction Bit
@@ -1314,7 +1313,7 @@ C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm(20): 
                  ;                    ||- Set for interface robot
                  ;                    |||- Set for recieve robot
                  ;                    ||||
-                 .equ	DeviceID = 0b01000111
+                 .equ	DeviceID = 0b00100111
                  
                  ;***********************************************************
                  ;*	Start of Code Segment
@@ -1327,6 +1326,8 @@ C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm(20): 
                  .org	$0000
 000000 c045      		rjmp	INIT			; reset interrupt
                  
+                 .org	$003C
+00003c 940c 006d 		jmp		ISR_RX_COMPLETE
                  		; place instructions in interrupt vectors here, if needed
                  
                  .org	$0046					; end of interrupt vectors
@@ -1342,33 +1343,117 @@ C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm(20): 
 000049 bf0e      		OUT		SPH, mpr		  ;Write byte to SPH
                  
                  		;Configre Data Direction Registers (no pullups required)
+00004a ef0f      		LDI		mpr, $FF			;Sets  PortB to be outputs (output display/motor control)
+00004b bb07      		OUT		DDRB, mpr
                  
-                 		;Configure Interrups/Times
+00004c e002      		LDI		mpr, (1<<PD1)			;Sets PortD to be inputs (all buttons), except for pin 2 for the TX
+00004d bb01      		OUT		DDRD, mpr
                  
+                 		;Configure Interrups/Timers
+                 
+                 		
                  		;Configure USART
+00004e e908      		LDI		mpr, (1<<RXCIE1) | (1<<RXEN1) | (1<<TXEN1) ;0b11011000
+00004f 9300 009a 		STS		UCSR1B, mpr     ;Enable RX, TX interrupt, Reciever, Enable
                  
+                 		;LDI		mpr, 0b00000000
+                 		;STS		UCSR1B, mpr     ;Configure UCSR1B to be Asynchronous
                  
+000051 e20e      		LDI		mpr, (1<<UPM11) | (1<<UCSZ11) | (1<<UCSZ10) | (1<<USBS1)
+                 				;0b00101110	;8 databits, 2 stop bits, even parity
+000052 9300 009d 		STS		UCSR1C, mpr
                  
+                 		;Load 2400 baud ($01A0)
+000054 ea00      		LDI		mpr, $A0	;LSB of baud rate selection
+000055 9300 0099 		STS		UBRR1L, mpr
                  
-00004a c000      		RJMP	MAIN
+000057 e001      		LDI		mpr, $01	;MSB of baud rate selection
+000058 9300 0098 		STS		UBRR1H, mpr
+                 
+                 		;Enable Interrupts
+00005a 9478      		SEI
+                 
+00005b c000      		RJMP	MAIN
                  
                  MAIN:
                  	;Determine where in execution code to send robot
-00004b e407      	LDI		mpr, DeviceID
-00004c fd06      	SBRC	mpr, 6  ;Check bit 6 to see if device is a remote
-00004d c006      	rjmp	MAIN_REMOTE
-00004e fd05      	SBRC	mpr, 5  ;Check bit 5 to see if device is an interface robot
-00004f 940c 0055 	jmp		MAIN_INTERFACE
-000051 fd04      	SBRC	mpr, 4  ;Check bit 4 to see if device is a reciever robot
-000052 940c 0056 	jmp		MAIN_RECIEVER
+00005c e207      	LDI		mpr, DeviceID
+00005d fd06      	SBRC	mpr, 6  ;Check bit 6 to see if device is a remote
+00005e c006      	rjmp	MAIN_REMOTE
+00005f fd05      	SBRC	mpr, 5  ;Check bit 5 to see if device is an interface robot
+000060 940c 0067 	jmp		MAIN_INTERFACE
+000062 fd04      	SBRC	mpr, 4  ;Check bit 4 to see if device is a reciever robot
+000063 940c 0069 	jmp		MAIN_RECIEVER
                  
                  MAIN_REMOTE:
-000054 0000      	NOP
+000065 0000      	NOP
+                 
+000066 cffe      	rjmp	MAIN_REMOTE
                  MAIN_INTERFACE:
-000055 0000      	NOP
+000067 0000      	NOP
+                 
+                 	;LDI		mpr, $FF
+                 	;OUT		PORTB, mpr
+                 	;LDI		waitcnt, waitTime 
+                 	;CALL	Wait			;Wait 20ms 
+                 
+                 	;LDI		mpr, $00
+                 	;OUT		PORTB, mpr
+                 	;LDI		waitcnt, waitTime 
+                 	;CALL	Wait			;Wait 20ms 
+                 
+000068 cffe      	rjmp	MAIN_INTERFACE
                  MAIN_RECIEVER:
-000056 0000      	NOP
-000057 cff3          rjmp MAIN
+000069 0000      	NOP
+                 
+00006a cffe      	rjmp	MAIN_RECIEVER
+                 
+00006b 940c 005c     jmp MAIN
+                 
+                 
+                 
+                 ISR_RX_COMPLETE:
+00006d 930f      	PUSH	mpr
+                 
+00006e 9100 009c 	LDS mpr, UDR1	;Load the RX'd data into mpr
+                 	;LDI		mpr, $FF
+000070 bb08      	OUT		PORTB, mpr	;Output the RX'd data onto the PORTB
+                 
+000071 910f      	POP		mpr
+                 
+000072 9518      	RETI
+                 
+                 ;----------------------------------------------------------------
+                 ; Sub:	Wait
+                 ; Desc:	A wait loop that is 16 + 159975*waitcnt cycles or roughly 
+                 ;		waitcnt*10ms.  Just initialize wait for the specific amount 
+                 ;		of time in 10ms intervals. Here is the general eqaution
+                 ;		for the number of clock cycles in the wait loop:
+                 ;			((3 * ilcnt + 3) * olcnt + 3) * waitcnt + 13 + call
+                 ;----------------------------------------------------------------
+                 Wait:
+000073 932f      		push	waitcnt			; Save wait register
+000074 933f      		push	ilcnt			; Save ilcnt register
+000075 934f      		push	olcnt			; Save olcnt register
+                 
+000076 ee40      Loop:	ldi		olcnt, 224		; load olcnt register
+000077 ee3d      OLoop:	ldi		ilcnt, 237		; load ilcnt register
+000078 953a      ILoop:	dec		ilcnt			; decrement ilcnt
+000079 f7f1      		brne	ILoop			; Continue Inner Loop
+00007a 954a      		dec		olcnt		; decrement olcnt
+00007b f7d9      		brne	OLoop			; Continue Outer Loop
+00007c 952a      		dec		waitcnt		; Decrement wait 
+00007d f7c1      		brne	Loop			; Continue Wait loop	
+                 
+00007e 914f      		pop		olcnt		; Restore olcnt register
+00007f 913f      		pop		ilcnt		; Restore ilcnt register
+000080 912f      		pop		waitcnt		; Restore wait register
+000081 9508      		ret				; Return from subroutine
+                 
+                 
+                 
+                 
+                 
 
 
 RESOURCE USE INFORMATION
@@ -1388,38 +1473,38 @@ counted separately from r26..r31 here.
 "ATmega128" register use summary:
 r0 :   0 r1 :   0 r2 :   0 r3 :   0 r4 :   0 r5 :   0 r6 :   0 r7 :   0 
 r8 :   0 r9 :   0 r10:   0 r11:   0 r12:   0 r13:   0 r14:   0 r15:   0 
-r16:   8 r17:   0 r18:   0 r19:   0 r20:   0 r21:   0 r22:   0 r23:   0 
+r16:  24 r17:   0 r18:   3 r19:   4 r20:   4 r21:   0 r22:   0 r23:   0 
 r24:   0 r25:   0 r26:   0 r27:   0 r28:   0 r29:   0 r30:   0 r31:   0 
 x  :   0 y  :   0 z  :   0 
-Registers used: 1 out of 35 (2.9%)
+Registers used: 4 out of 35 (11.4%)
 
 "ATmega128" instruction use summary:
 .lds  :   0 .sts  :   0 adc   :   0 add   :   0 adiw  :   0 and   :   0 
 andi  :   0 asr   :   0 bclr  :   0 bld   :   0 brbc  :   0 brbs  :   0 
 brcc  :   0 brcs  :   0 break :   0 breq  :   0 brge  :   0 brhc  :   0 
 brhs  :   0 brid  :   0 brie  :   0 brlo  :   0 brlt  :   0 brmi  :   0 
-brne  :   0 brpl  :   0 brsh  :   0 brtc  :   0 brts  :   0 brvc  :   0 
+brne  :   3 brpl  :   0 brsh  :   0 brtc  :   0 brts  :   0 brvc  :   0 
 brvs  :   0 bset  :   0 bst   :   0 call  :   0 cbi   :   0 cbr   :   0 
 clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :   0 cls   :   0 
 clt   :   0 clv   :   0 clz   :   0 com   :   0 cp    :   0 cpc   :   0 
-cpi   :   0 cpse  :   0 dec   :   0 elpm  :   0 eor   :   0 fmul  :   0 
+cpi   :   0 cpse  :   0 dec   :   3 elpm  :   0 eor   :   0 fmul  :   0 
 fmuls :   0 fmulsu:   0 icall :   0 ijmp  :   0 in    :   0 inc   :   0 
-jmp   :   2 ld    :   0 ldd   :   0 ldi   :   3 lds   :   0 lpm   :   0 
+jmp   :   4 ld    :   0 ldd   :   0 ldi   :  11 lds   :   1 lpm   :   0 
 lsl   :   0 lsr   :   0 mov   :   0 movw  :   0 mul   :   0 muls  :   0 
-mulsu :   0 neg   :   0 nop   :   3 or    :   0 ori   :   0 out   :   2 
-pop   :   0 push  :   0 rcall :   0 ret   :   0 reti  :   0 rjmp  :   4 
+mulsu :   0 neg   :   0 nop   :   3 or    :   0 ori   :   0 out   :   5 
+pop   :   4 push  :   4 rcall :   0 ret   :   1 reti  :   1 rjmp  :   6 
 rol   :   0 ror   :   0 sbc   :   0 sbci  :   0 sbi   :   0 sbic  :   0 
 sbis  :   0 sbiw  :   0 sbr   :   0 sbrc  :   3 sbrs  :   0 sec   :   0 
-seh   :   0 sei   :   0 sen   :   0 ser   :   0 ses   :   0 set   :   0 
+seh   :   0 sei   :   1 sen   :   0 ser   :   0 ses   :   0 set   :   0 
 sev   :   0 sez   :   0 sleep :   0 spm   :   0 st    :   0 std   :   0 
-sts   :   0 sub   :   0 subi  :   0 swap  :   0 tst   :   0 wdr   :   0 
+sts   :   4 sub   :   0 subi  :   0 swap  :   0 tst   :   0 wdr   :   0 
 
-Instructions used: 6 out of 114 (5.3%)
+Instructions used: 15 out of 114 (13.2%)
 
 "ATmega128" memory use summary [bytes]:
 Segment   Begin    End      Code   Data   Used    Size   Use%
 ---------------------------------------------------------------
-[.cseg] 0x000000 0x0000b0     38      0     38  131072   0.0%
+[.cseg] 0x000000 0x000104    126      0    126  131072   0.1%
 [.dseg] 0x000100 0x000100      0      0      0    4096   0.0%
 [.eseg] 0x000000 0x000000      0      0      0    4096   0.0%
 

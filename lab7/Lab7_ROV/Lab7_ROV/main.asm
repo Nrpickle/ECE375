@@ -27,9 +27,8 @@
 .def	waitcnt = r18
 .def	ilcnt = r19				; Inner Loop Counter
 .def	olcnt = r20				; Outer Loop Counter
-.def	speedDial = r21
 
-.equ	debounceTime = 20
+.equ	waitTime = 20
 .equ	EngEnR = 4				; right Engine Enable Bit
 .equ	EngEnL = 7				; left Engine Enable Bit
 .equ	EngDirR = 5				; right Engine Direction Bit
@@ -47,7 +46,7 @@
 ;                    ||- Set for interface robot
 ;                    |||- Set for recieve robot
 ;                    ||||
-.equ	DeviceID = 0b01000111
+.equ	DeviceID = 0b00100111
 
 ;***********************************************************
 ;*	Start of Code Segment
@@ -60,6 +59,8 @@
 .org	$0000
 		rjmp	INIT			; reset interrupt
 
+.org	$003C
+		jmp		ISR_RX_COMPLETE
 		; place instructions in interrupt vectors here, if needed
 
 .org	$0046					; end of interrupt vectors
@@ -75,13 +76,35 @@ INIT:
 		OUT		SPH, mpr		  ;Write byte to SPH
 
 		;Configre Data Direction Registers (no pullups required)
+		LDI		mpr, $FF			;Sets  PortB to be outputs (output display/motor control)
+		OUT		DDRB, mpr
 
-		;Configure Interrups/Times
+		LDI		mpr, (1<<PD1)			;Sets PortD to be inputs (all buttons), except for pin 2 for the TX
+		OUT		DDRD, mpr
 
+		;Configure Interrups/Timers
+
+		
 		;Configure USART
+		LDI		mpr, (1<<RXCIE1) | (1<<RXEN1) | (1<<TXEN1) ;0b11011000
+		STS		UCSR1B, mpr     ;Enable RX, TX interrupt, Reciever, Enable
 
+		;LDI		mpr, 0b00000000
+		;STS		UCSR1B, mpr     ;Configure UCSR1B to be Asynchronous
 
+		LDI		mpr, (1<<UPM11) | (1<<UCSZ11) | (1<<UCSZ10) | (1<<USBS1)
+				;0b00101110	;8 databits, 2 stop bits, even parity
+		STS		UCSR1C, mpr
 
+		;Load 2400 baud ($01A0)
+		LDI		mpr, $A0	;LSB of baud rate selection
+		STS		UBRR1L, mpr
+
+		LDI		mpr, $01	;MSB of baud rate selection
+		STS		UBRR1H, mpr
+
+		;Enable Interrupts
+		SEI
 
 		RJMP	MAIN
 
@@ -97,8 +120,70 @@ MAIN:
 
 MAIN_REMOTE:
 	NOP
+
+	rjmp	MAIN_REMOTE
 MAIN_INTERFACE:
 	NOP
+
+	;LDI		mpr, $FF
+	;OUT		PORTB, mpr
+	;LDI		waitcnt, waitTime 
+	;CALL	Wait			;Wait 20ms 
+
+	;LDI		mpr, $00
+	;OUT		PORTB, mpr
+	;LDI		waitcnt, waitTime 
+	;CALL	Wait			;Wait 20ms 
+
+	rjmp	MAIN_INTERFACE
 MAIN_RECIEVER:
 	NOP
-    rjmp MAIN
+
+	rjmp	MAIN_RECIEVER
+
+    jmp MAIN
+
+
+
+ISR_RX_COMPLETE:
+	PUSH	mpr
+
+	LDS mpr, UDR1	;Load the RX'd data into mpr
+	;LDI		mpr, $FF
+	OUT		PORTB, mpr	;Output the RX'd data onto the PORTB
+
+	POP		mpr
+
+	RETI
+
+;----------------------------------------------------------------
+; Sub:	Wait
+; Desc:	A wait loop that is 16 + 159975*waitcnt cycles or roughly 
+;		waitcnt*10ms.  Just initialize wait for the specific amount 
+;		of time in 10ms intervals. Here is the general eqaution
+;		for the number of clock cycles in the wait loop:
+;			((3 * ilcnt + 3) * olcnt + 3) * waitcnt + 13 + call
+;----------------------------------------------------------------
+Wait:
+		push	waitcnt			; Save wait register
+		push	ilcnt			; Save ilcnt register
+		push	olcnt			; Save olcnt register
+
+Loop:	ldi		olcnt, 224		; load olcnt register
+OLoop:	ldi		ilcnt, 237		; load ilcnt register
+ILoop:	dec		ilcnt			; decrement ilcnt
+		brne	ILoop			; Continue Inner Loop
+		dec		olcnt		; decrement olcnt
+		brne	OLoop			; Continue Outer Loop
+		dec		waitcnt		; Decrement wait 
+		brne	Loop			; Continue Wait loop	
+
+		pop		olcnt		; Restore olcnt register
+		pop		ilcnt		; Restore ilcnt register
+		pop		waitcnt		; Restore wait register
+		ret				; Return from subroutine
+
+
+
+
+
