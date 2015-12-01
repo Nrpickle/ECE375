@@ -27,12 +27,27 @@
 .def	waitcnt = r18
 .def	ilcnt = r19				; Inner Loop Counter
 .def	olcnt = r20				; Outer Loop Counter
+.def	prep_to_send = r21
 
-.equ	waitTime = 20
+.def	rx_deviceid = r5
+.def	rx_actioncode = r6
+.def	previousMotorCommand = r7
+.def	previousActionCode = r8
+
+.equ	remoteWaitTime = 20
+.equ	robotWaitTime = 20
+.equ	freezeTime = 250
 .equ	EngEnR = 4				; right Engine Enable Bit
 .equ	EngEnL = 7				; left Engine Enable Bit
 .equ	EngDirR = 5				; right Engine Direction Bit
 .equ	EngDirL = 6				; left Engine Direction Bit
+
+.equ	cmd_forward = 0b10110000
+.equ	cmd_backward = 0b10000000
+.equ	cmd_turnRight = 0b10100000
+.equ	cmd_turnLeft = 0b10010000
+.equ	cmd_halt = 0b11001000
+.equ	cmd_freeze = 0b11111000
 
 .equ	MovFwd = (1<<EngDirR|1<<EngDirL)	; Move Forwards Command
 .equ	MovBck = $00				; Move Backwards Command
@@ -46,7 +61,13 @@
 ;                    ||- Set for interface robot
 ;                    |||- Set for recieve robot
 ;                    ||||
-.equ	DeviceID = 0b00100111
+.equ	DeviceID = 0b00100111 
+
+;Interface robot: $27
+
+.equ	RemoteTargetId = $27 ;0b00100111
+
+;01010101
 
 ;***********************************************************
 ;*	Start of Code Segment
@@ -60,7 +81,7 @@
 		rjmp	INIT			; reset interrupt
 
 .org	$003C
-		jmp		ISR_RX_COMPLETE
+		rjmp		ISR_RX_COMPLETE
 		; place instructions in interrupt vectors here, if needed
 
 .org	$0046					; end of interrupt vectors
@@ -79,7 +100,7 @@ INIT:
 		LDI		mpr, $FF			;Sets  PortB to be outputs (output display/motor control)
 		OUT		DDRB, mpr
 
-		LDI		mpr, (1<<PD1)			;Sets PortD to be inputs (all buttons), except for pin 2 for the TX
+		LDI		mpr, $08 			;Sets PortD to be inputs (all buttons), except for pin 2 for the TX
 		OUT		DDRD, mpr
 
 		;Configure Interrups/Timers
@@ -89,8 +110,6 @@ INIT:
 		LDI		mpr, (1<<RXCIE1) | (1<<RXEN1) | (1<<TXEN1) ;0b11011000
 		STS		UCSR1B, mpr     ;Enable RX, TX interrupt, Reciever, Enable
 
-		;LDI		mpr, 0b00000000
-		;STS		UCSR1B, mpr     ;Configure UCSR1B to be Asynchronous
 
 		LDI		mpr, (1<<UPM11) | (1<<UCSZ11) | (1<<UCSZ10) | (1<<USBS1)
 				;0b00101110	;8 databits, 2 stop bits, even parity
@@ -102,6 +121,19 @@ INIT:
 
 		LDI		mpr, $01	;MSB of baud rate selection
 		STS		UBRR1H, mpr
+
+		;Initialize the rx registers with a valid move forward command
+		LDI		mpr, DeviceId
+		MOV		rx_deviceid, mpr
+		LDI		mpr, cmd_forward
+		MOV		rx_actioncode, mpr
+
+		;Specially set output for robot, because the remote will override this
+		;with it's own output values anyway
+		LDI		mpr, MovFwd
+		;OUT		PORTB, mpr
+		MOV		previousMotorCommand, mpr  ;Store the default previous motor command
+		
 
 		;Enable Interrupts
 		SEI
@@ -119,23 +151,196 @@ MAIN:
 	jmp		MAIN_RECIEVER
 
 MAIN_REMOTE:
+	LDI		mpr, $00   ;test
+	OUT		PORTB, mpr ;test
+
+	;Check if any buttons are pressed
+	IN		mpr, PIND
+	COM		mpr
+	ANDI	mpr, 0b11110011
+	;CPI		mpr, $00
+	BREQ	MAIN_REMOTE
+
+	clr		prep_to_send
+
+	IN		mpr, PIND
+	SBRS	mpr, 7
+	LDI		prep_to_send, cmd_turnLeft	;Left
+	SBRS	mpr, 6
+	LDI		prep_to_send, cmd_turnRight	;Right
+	SBRS	mpr, 5
+	LDI		prep_to_send, cmd_backward	;Backward
+	SBRS	mpr, 4
+	LDI		prep_to_send, cmd_forward	;Forward
+	SBRS	mpr, 3
+	NOP		;NOTHING
+	SBRS	mpr, 2
+	NOP		;NOTHING
+	SBRS	mpr, 1
+	LDI		prep_to_send, cmd_halt		;Halt
+	SBRS	mpr, 0
+	LDI		prep_to_send, cmd_freeze	;Freeze
+
+
+MAIN_REMOTE_LOOP1:
+	LDS		mpr, UCSR1A
+	SBRS	mpr, UDRE1
+	rjmp	MAIN_REMOTE_LOOP1
+
+	;Actually send command
+	LDI		mpr, RemoteTargetID
+	STS		UDR1, mpr
+
+MAIN_REMOTE_LOOP2:
+	LDS		mpr, UCSR1A
+	SBRS	mpr, UDRE1
+	rjmp	MAIN_REMOTE_LOOP2
+
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
 	NOP
 
+	;Actually send command
+	STS		UDR1, prep_to_send
+
+	;Output "SEND" flash
+	LDI		mpr, $FF   ;test
+	OUT		PORTB, mpr ;test
+	LDI		waitCnt, remoteWaitTime	;test
+	CALL	Wait					;test
+
 	rjmp	MAIN_REMOTE
+
+
+; ----------------------------
+; BEGIN OF MAIN_INTERFACE
+; ----------------------------
+
 MAIN_INTERFACE:
 	NOP
 
+	;MOV		mpr, rx_deviceid
+	;OUT		PORTB, mpr
+	;Need to add bumper parsing
+
+	;Check if a "freeze" command has been recieved
+	LDI		mpr, $03
+	CP		rx_deviceid, mpr
+	BREQ	MAIN_INTERFACE_RECEIVE_FREEZE
+	
+	;LDI		mpr, cmd_freeze
+	;CP		mpr , rx_actioncode
+	;BREQ	MAIN_INTERFACE_RECEIVE_FREEZE
+
+	;Check if "my" id has been recieved
+	LDI		mpr, DeviceID
+	CP		rx_deviceid, mpr	;Compare the recieved device ID to the current id
+								;if it doesn't match, then restart this part of the
+	BRNE	MAIN_INTERFACE		;program
+
+	;If we've reached this point, we can assume that we are working with a valid command
+	MOV		mpr, rx_actioncode
+	;We need to find out if the command was to send a freeze command
+	CPI		mpr, cmd_freeze				;If the command recieved was the freeze command,
+	BREQ	MAIN_INTERFACE_SEND_FREEZE  ;branch to the send freeze command branch
+	;Else, we need to output to the motors
+
+	LSL		mpr						;Rotate left to get an actual motor command
+	OUT		PORTB, mpr				;Output actual motor command to the motors
+	MOV		previousMotorCommand, mpr	;Store this value into our storage register
+	MOV		previousActionCode, rx_actioncode
+
 	;LDI		mpr, $FF
 	;OUT		PORTB, mpr
-	;LDI		waitcnt, waitTime 
-	;CALL	Wait			;Wait 20ms 
 
-	;LDI		mpr, $00
+	;LDI		mpr, remoteWaitTime
+	;MOV		waitCnt, mpr
+	;CALL	Wait
+
+	;MOV		mpr, previousMotorCommand
 	;OUT		PORTB, mpr
-	;LDI		waitcnt, waitTime 
-	;CALL	Wait			;Wait 20ms 
 
+	rjmp	MAIN_INTERFACE ;Return to top of program
+
+MAIN_INTERFACE_RECEIVE_FREEZE:
+	CLI		;We don't want anything else going on
+
+	LDI		mpr, Halt  ;stop the robot
+	OUT		PORTB, mpr
+
+	;Wait for 5 seconds... [TODO: Replace with timers!]
+	LDI		waitCnt, freezeTime
+	CALL	Wait
+	LDI		waitCnt, freezeTime
+	CALL	Wait
+
+	;Output previously valid motor command to the freeze
+	LDI		mpr, $55	;DEBUG
+	OUT		PORTB, mpr	;DEBUG
+	;OUT		PORTB, previousMotorCommand
+	MOV		rx_actioncode, previousActionCode
+	LDI		mpr, DeviceID
+	MOV		rx_deviceid, mpr
+
+	SEI		;Return interrupts to normal operation
 	rjmp	MAIN_INTERFACE
+
+MAIN_INTERFACE_SEND_FREEZE:  ;process the freeze command
+	;Gotsta do the freeze stuff!
+	CLI			;We don't want to recieve our own freeze command
+	;Configure USART to not receive
+	LDI		mpr, (1<<TXEN1) 
+	STS		UCSR1B, mpr     ;Enable TX ONLY (disable RX)
+
+MAIN_INTERFACE_SEND_FREEZE_LOOP:
+	LDS		mpr, UCSR1A
+	SBRS	mpr, UDRE1
+	rjmp	MAIN_INTERFACE_SEND_FREEZE_LOOP
+
+	;Actually send command
+	LDI		mpr, $03		;By convention, all zeros is an "all robot"
+							;freeze command
+	STS		UDR1, mpr
+
+	;We don't want to send freeze forever, so load the previous command and proceess
+	;it the next iteration through MAIN_INTERFACE
+	MOV		rx_actioncode, previousActionCode
+	LDI		mpr, DeviceID
+	MOV		rx_deviceid, mpr
+	
+	LDI		mpr, robotWaitTime
+	MOV		waitCnt, mpr
+	CALL	Wait
+
+	NOP  ;Couplea NOPs for good measure
+	NOP
+	
+	;Renable RX USART
+	LDI		mpr, (1<<RXCIE1) | (1<<RXEN1) | (1<<TXEN1) ;0b11011000
+	STS		UCSR1B, mpr     ;Enable RX, TX, Reciever, Transmitter
+
+	SEI			;Reenable freezing
+	rjmp	MAIN_INTERFACE
+
+; ----------------------------
+; END OF MAIN_INTERFACE
+; ----------------------------
+
 MAIN_RECIEVER:
 	NOP
 
@@ -148,10 +353,20 @@ MAIN_RECIEVER:
 ISR_RX_COMPLETE:
 	PUSH	mpr
 
-	LDS mpr, UDR1	;Load the RX'd data into mpr
-	;LDI		mpr, $FF
-	OUT		PORTB, mpr	;Output the RX'd data onto the PORTB
+	LDS		mpr, UDR1	;Load the RX'd data into mpr
+	SBRS	mpr, 7		;Check if "Action Code"
+	rjmp	DeviceIDLoad
+	rjmp	ActionCodeLoad
 
+DeviceIDLoad:
+	mov		rx_deviceid, mpr
+	rjmp	ISR_RX_END
+ActionCodeLoad:
+	mov		rx_actioncode, mpr
+	rjmp	ISR_RX_END
+	
+
+ISR_RX_END:
 	POP		mpr
 
 	RETI
