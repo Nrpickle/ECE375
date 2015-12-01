@@ -33,6 +33,8 @@
 .def	rx_actioncode = r6
 .def	previousMotorCommand = r7
 .def	previousActionCode = r8
+.def	rx_deviceid_temp = r9
+.def	rx_actioncode_temp = r10
 
 .equ	remoteWaitTime = 20
 .equ	robotWaitTime = 20
@@ -66,6 +68,7 @@
 ;Interface robot: $27
 
 .equ	RemoteTargetId = $27 ;0b00100111
+.equ	targetRobotId = $23
 
 ;01010101
 
@@ -124,9 +127,9 @@ INIT:
 
 		;Initialize the rx registers with a valid move forward command
 		LDI		mpr, DeviceId
-		MOV		rx_deviceid, mpr
+		MOV		rx_deviceid_temp, mpr
 		LDI		mpr, cmd_forward
-		MOV		rx_actioncode, mpr
+		MOV		rx_actioncode_temp, mpr
 
 		;Specially set output for robot, because the remote will override this
 		;with it's own output values anyway
@@ -234,14 +237,8 @@ MAIN_REMOTE_LOOP2:
 MAIN_INTERFACE:
 	NOP
 
-	;MOV		mpr, rx_deviceid
-	;OUT		PORTB, mpr
-	;Need to add bumper parsing
-
-	;Check if a "freeze" command has been recieved
-	LDI		mpr, $03
-	CP		rx_deviceid, mpr
-	BREQ	MAIN_INTERFACE_RECEIVE_FREEZE
+	MOV		rx_deviceid, rx_deviceid_temp
+	MOV		rx_actioncode, rx_actioncode_temp
 	
 	;LDI		mpr, cmd_freeze
 	;CP		mpr , rx_actioncode
@@ -254,6 +251,12 @@ MAIN_INTERFACE:
 	BRNE	MAIN_INTERFACE		;program
 
 	;If we've reached this point, we can assume that we are working with a valid command
+	;Check if an "all robot freeze" command has been recieved
+	LDI		mpr, $8F
+	CP		rx_actioncode, mpr
+	BREQ	MAIN_INTERFACE_RECEIVE_FREEZE
+
+
 	MOV		mpr, rx_actioncode
 	;We need to find out if the command was to send a freeze command
 	CPI		mpr, cmd_freeze				;If the command recieved was the freeze command,
@@ -312,16 +315,25 @@ MAIN_INTERFACE_SEND_FREEZE_LOOP:
 	SBRS	mpr, UDRE1
 	rjmp	MAIN_INTERFACE_SEND_FREEZE_LOOP
 
+	LDI		mpr, targetRobotID
+
+	STS		UDR1, mpr
+
+MAIN_INTERFACE_SEND_FREEZE_LOOP2:
+	LDS		mpr, UCSR1A
+	SBRS	mpr, UDRE1
+	rjmp	MAIN_INTERFACE_SEND_FREEZE_LOOP2
+
 	;Actually send command
-	LDI		mpr, $03		;By convention, all zeros is an "all robot"
+	LDI		mpr, $8F		;By convention, all zeros is an "all robot"
 							;freeze command
 	STS		UDR1, mpr
 
 	;We don't want to send freeze forever, so load the previous command and proceess
 	;it the next iteration through MAIN_INTERFACE
-	MOV		rx_actioncode, previousActionCode
+	MOV		rx_actioncode_temp, previousActionCode
 	LDI		mpr, DeviceID
-	MOV		rx_deviceid, mpr
+	MOV		rx_deviceid_temp, mpr
 	
 	LDI		mpr, robotWaitTime
 	MOV		waitCnt, mpr
@@ -359,10 +371,10 @@ ISR_RX_COMPLETE:
 	rjmp	ActionCodeLoad
 
 DeviceIDLoad:
-	mov		rx_deviceid, mpr
+	mov		rx_deviceid_temp, mpr
 	rjmp	ISR_RX_END
 ActionCodeLoad:
-	mov		rx_actioncode, mpr
+	mov		rx_actioncode_temp, mpr
 	rjmp	ISR_RX_END
 	
 
