@@ -29,13 +29,13 @@
 .def	olcnt = r20				; Outer Loop Counter
 .def	prep_to_send = r21
 
-.def	rx_deviceid = r5		;Stores the actionable device id
-.def	rx_actioncode = r6		;Stores the actionable action code
+.def	rx_deviceid = r5			;Stores the actionable device id
+.def	rx_actioncode = r6			;Stores the actionable action code
 .def	previousMotorCommand = r7	;Stores the previous valid motor command
-.def	previousActionCode = r8
-.def	rx_deviceid_temp = r9
-.def	rx_actioncode_temp = r10
-.def	lifeCounter = r11
+.def	previousActionCode = r8		;Stores previous valid action code
+.def	rx_deviceid_temp = r9		;Stores the latest recieved device id
+.def	rx_actioncode_temp = r10	;Stores the latest recieved action code
+.def	lifeCounter = r11			;Number of labs
 
 .equ	remoteWaitTime = 20		;How long the remote keeps the lights on, and waits to send another
 .equ	robotWaitTime = 20		;This is the time that the robot waits to turn on Rx after sending a freeze
@@ -46,6 +46,7 @@
 .equ	EngDirR = 5				; right Engine Direction Bit
 .equ	EngDirL = 6				; left Engine Direction Bit
 
+;Defines for all of the commands to be sent/recieved over IR
 .equ	cmd_forward = 0b10110000
 .equ	cmd_backward = 0b10000000
 .equ	cmd_turnRight = 0b10100000
@@ -53,6 +54,7 @@
 .equ	cmd_halt = 0b11001000
 .equ	cmd_freeze = 0b11111000
 
+;Defines commands to be sent to the motors
 .equ	MovFwd = (1<<EngDirR|1<<EngDirL)	; Move Forwards Command
 .equ	MovBck = $00				; Move Backwards Command
 .equ	TurnR = (1<<EngDirL)			; Turn Right Command
@@ -63,7 +65,7 @@
 ;                    - Defined in spec to be 0
 ;                    |- Set for remote control device
 ;                    ||- Set for interface robot
-;                    |||- Set for recieve robot
+;                    |||- Set for recieve robot (depreciated)
 ;                    ||||
 ;.equ	DeviceID = 0b01000111 
 
@@ -75,14 +77,14 @@
 .equ	targetRobotID = $23
 
 ;Configuration for Robot1 (doesn't matter, just what I used)
-.equ	RemoteTargetId = $27 ;0b00100111
-.equ	DeviceID = $27
-.equ	targetRobotId = $23
+;.equ	RemoteTargetId = $27 ;0b00100111
+;.equ	DeviceID = $27
+;.equ	targetRobotId = $23
 
 ;Configuration for Robot2
-.equ	RemoteTargetId = $27 ;0b00100111
-.equ	DeviceID = $23
-.equ	targetRobotId = $22
+;.equ	RemoteTargetId = $27 ;0b00100111
+;.equ	DeviceID = $23
+;.equ	targetRobotId = $22
 
 
 ;01010101
@@ -122,7 +124,7 @@ INIT:
 		OUT		DDRD, mpr
 
 		;Configure Interrups/Timers
-
+		;;None used;;
 		
 		;Configure USART
 		LDI		mpr, (1<<RXCIE1) | (1<<RXEN1) | (1<<TXEN1) ;0b11011000
@@ -159,25 +161,30 @@ INIT:
 		LDI		mpr, 3
 		MOV		lifeCounter, mpr
 
-
 		;Enable Interrupts
 		SEI
 
 		RJMP	MAIN
 
 MAIN:
-	;Determine where in execution code to send robot
+	;Determine where in execution code to send robot (this allows all of the code to use the same file
 	LDI		mpr, DeviceID
 	SBRC	mpr, 6  ;Check bit 6 to see if device is a remote
 	rjmp	MAIN_REMOTE
 	SBRC	mpr, 5  ;Check bit 5 to see if device is an interface robot
 	jmp		MAIN_INTERFACE
 	SBRC	mpr, 4  ;Check bit 4 to see if device is a reciever robot
-	jmp		MAIN_RECIEVER
+	jmp		MAIN_RECIEVER ;DEPRECIATED
+
+
+; ----------------------------
+; BEGIN OF MAIN_REMOTE
+; ----------------------------
 
 MAIN_REMOTE:
-	LDI		mpr, $00   ;test
-	OUT		PORTB, mpr ;test
+	;By default, we want to output all zeros to the screen
+	LDI		mpr, $00   
+	OUT		PORTB, mpr
 
 	;Check if any buttons are pressed
 	IN		mpr, PIND
@@ -186,8 +193,11 @@ MAIN_REMOTE:
 	;CPI		mpr, $00
 	BREQ	MAIN_REMOTE
 
-	clr		prep_to_send
+	clr		prep_to_send	;Clear the register that will be sent out over IR
 
+	;Parsing whether or not the pins are pressed, then adds the appropriate
+	;command to the prep register
+	;This can work for multiple buttons too
 	IN		mpr, PIND
 	SBRS	mpr, 7
 	LDI		prep_to_send, cmd_turnLeft	;Left
@@ -206,7 +216,7 @@ MAIN_REMOTE:
 	SBRS	mpr, 0
 	LDI		prep_to_send, cmd_freeze	;Freeze
 
-
+	;Wait until we are ready to send, really a formality here
 MAIN_REMOTE_LOOP1:
 	LDS		mpr, UCSR1A
 	SBRS	mpr, UDRE1
@@ -215,25 +225,23 @@ MAIN_REMOTE_LOOP1:
 	;Actually send command
 	LDI		mpr, RemoteTargetID
 	STS		UDR1, mpr
-
+	
+	;Wait until ready to send again
 MAIN_REMOTE_LOOP2:
 	LDS		mpr, UCSR1A
 	SBRS	mpr, UDRE1
 	rjmp	MAIN_REMOTE_LOOP2
 
-	NOP
-	NOP
-
 	;Actually send command
 	STS		UDR1, prep_to_send
 
-	;Output "SEND" flash
-	LDI		mpr, $FF   ;test
-	OUT		PORTB, mpr ;test
-	LDI		waitCnt, remoteWaitTime	;test
-	CALL	Wait					;test
+	;Output "SEND" flash (just user feedback)
+	LDI		mpr, $FF   
+	OUT		PORTB, mpr 
+	LDI		waitCnt, remoteWaitTime	
+	CALL	Wait					
 
-	rjmp	MAIN_REMOTE
+	rjmp	MAIN_REMOTE		;Restart the remote "main"
 
 
 ; ----------------------------
@@ -276,6 +284,13 @@ MAIN_INTERFACE:
 	RJMP	MAIN_SKIP_FREEZE
 	RJMP	MAIN_INTERFACE_RECEIVE_FREEZE
 
+
+; ----------------------------
+; BEGIN OF MAIN_SKIP_FREEZE
+; ----------------------------
+
+;This handles 
+
 MAIN_SKIP_FREEZE:
 
 	MOV		mpr, rx_actioncode
@@ -291,6 +306,13 @@ MAIN_SKIP_FREEZE:
 
 
 	rjmp	MAIN_INTERFACE ;Return to top of program
+
+; -------------------------------
+; BEGIN OF MAIN_RECIEVE_FREEZE
+; -------------------------------
+
+;This handles the robot recieving a freeze command
+;which is a very special case compared to the others
 
 MAIN_INTERFACE_RECEIVE_FREEZE:
 	CLI		;We don't want anything else going on
@@ -317,10 +339,22 @@ MAIN_INTERFACE_RECEIVE_FREEZE:
 	SEI		;Return interrupts to normal operation
 	rjmp	MAIN_INTERFACE
 
+; -------------------------------
+; BEGIN OF ULTIMATE_DEATH
+; -------------------------------
+
+;This is where execution goes to die
+
 ;ULTIMATE DEATH graveyard
 ULTIMATE_DEATH:
 	RJMP	ULTIMATE_DEATH
 
+; -------------------------------
+; BEGIN OF MAIN_RECIEVE_FREEZE
+; -------------------------------
+
+;This handles the robot needing to send a freeze command
+;which is a very special case compared to the others
 
 MAIN_INTERFACE_SEND_FREEZE:  ;process the freeze command
 	;Gotsta do the freeze stuff!
