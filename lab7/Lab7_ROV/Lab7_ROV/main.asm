@@ -29,16 +29,17 @@
 .def	olcnt = r20				; Outer Loop Counter
 .def	prep_to_send = r21
 
-.def	rx_deviceid = r5
-.def	rx_actioncode = r6
-.def	previousMotorCommand = r7
+.def	rx_deviceid = r5		;Stores the actionable device id
+.def	rx_actioncode = r6		;Stores the actionable action code
+.def	previousMotorCommand = r7	;Stores the previous valid motor command
 .def	previousActionCode = r8
 .def	rx_deviceid_temp = r9
 .def	rx_actioncode_temp = r10
+.def	lifeCounter = r11
 
-.equ	remoteWaitTime = 20
-.equ	robotWaitTime = 20
-.equ	freezeTime = 250
+.equ	remoteWaitTime = 20		;How long the remote keeps the lights on, and waits to send another
+.equ	robotWaitTime = 20		;This is the time that the robot waits to turn on Rx after sending a freeze
+.equ	freezeTime = 250		;1/2 of the total freeze time
 .equ	WTime = 100				; Bumper wait time
 .equ	EngEnR = 4				; right Engine Enable Bit
 .equ	EngEnL = 7				; left Engine Enable Bit
@@ -64,12 +65,25 @@
 ;                    ||- Set for interface robot
 ;                    |||- Set for recieve robot
 ;                    ||||
-.equ	DeviceID = 0b00100111 
+;.equ	DeviceID = 0b01000111 
 
-;Interface robot: $27
+;Note: All three configurations require all 3 IDs to be defined, for reasons.
 
+;Configuration for Remote
 .equ	RemoteTargetId = $27 ;0b00100111
+.equ	DeviceID = $47
+.equ	targetRobotID = $23
+
+;Configuration for Robot1 (doesn't matter, just what I used)
+.equ	RemoteTargetId = $27 ;0b00100111
+.equ	DeviceID = $27
 .equ	targetRobotId = $23
+
+;Configuration for Robot2
+.equ	RemoteTargetId = $27 ;0b00100111
+.equ	DeviceID = $23
+.equ	targetRobotId = $22
+
 
 ;01010101
 
@@ -137,7 +151,14 @@ INIT:
 		LDI		mpr, MovFwd
 		;OUT		PORTB, mpr
 		MOV		previousMotorCommand, mpr  ;Store the default previous motor command
-		
+		LDI		mpr, cmd_forward
+		MOV		previousActionCode, mpr		;Store the forward command in the previous 
+											;action code
+
+		;Load 3 lives into 'da computer
+		LDI		mpr, 3
+		MOV		lifeCounter, mpr
+
 
 		;Enable Interrupts
 		SEI
@@ -202,22 +223,6 @@ MAIN_REMOTE_LOOP2:
 
 	NOP
 	NOP
-	NOP
-	NOP
-	NOP
-	NOP
-	NOP
-	NOP
-	NOP
-	NOP
-	NOP
-	NOP
-	NOP
-	NOP
-	NOP
-	NOP
-	NOP
-	NOP
 
 	;Actually send command
 	STS		UDR1, prep_to_send
@@ -253,8 +258,6 @@ MAIN_INTERFACE:
 	MOV		rx_deviceid, rx_deviceid_temp
 	MOV		rx_actioncode, rx_actioncode_temp
 
-	
-	
 	;LDI		mpr, cmd_freeze
 	;CP		mpr , rx_actioncode
 	;BREQ	MAIN_INTERFACE_RECEIVE_FREEZE
@@ -266,11 +269,14 @@ MAIN_INTERFACE:
 	BRNE	MAIN_INTERFACE		;program
 
 	;If we've reached this point, we can assume that we are working with a valid command
+	
 	;Check if an "all robot freeze" command has been recieved
-	LDI		mpr, $8F
-	CP		rx_actioncode, mpr
-	BREQ	MAIN_INTERFACE_RECEIVE_FREEZE
+	LDI		mpr, $FF
+	CPSE	mpr, rx_actioncode
+	RJMP	MAIN_SKIP_FREEZE
+	RJMP	MAIN_INTERFACE_RECEIVE_FREEZE
 
+MAIN_SKIP_FREEZE:
 
 	MOV		mpr, rx_actioncode
 	;We need to find out if the command was to send a freeze command
@@ -283,15 +289,6 @@ MAIN_INTERFACE:
 	MOV		previousMotorCommand, mpr	;Store this value into our storage register
 	MOV		previousActionCode, rx_actioncode
 
-	;LDI		mpr, $FF
-	;OUT		PORTB, mpr
-
-	;LDI		mpr, remoteWaitTime
-	;MOV		waitCnt, mpr
-	;CALL	Wait
-
-	;MOV		mpr, previousMotorCommand
-	;OUT		PORTB, mpr
 
 	rjmp	MAIN_INTERFACE ;Return to top of program
 
@@ -307,16 +304,23 @@ MAIN_INTERFACE_RECEIVE_FREEZE:
 	LDI		waitCnt, freezeTime
 	CALL	Wait
 
+	;Code to only last 3 lives
+	DEC		lifeCounter
+	BREQ	ULTIMATE_DEATH
+
+
 	;Output previously valid motor command to the freeze
-	LDI		mpr, $55	;DEBUG
-	OUT		PORTB, mpr	;DEBUG
-	;OUT		PORTB, previousMotorCommand
-	MOV		rx_actioncode, previousActionCode
+	MOV		rx_actioncode_temp, previousActionCode
 	LDI		mpr, DeviceID
-	MOV		rx_deviceid, mpr
+	MOV		rx_deviceid_temp, mpr
 
 	SEI		;Return interrupts to normal operation
 	rjmp	MAIN_INTERFACE
+
+;ULTIMATE DEATH graveyard
+ULTIMATE_DEATH:
+	RJMP	ULTIMATE_DEATH
+
 
 MAIN_INTERFACE_SEND_FREEZE:  ;process the freeze command
 	;Gotsta do the freeze stuff!
@@ -325,23 +329,23 @@ MAIN_INTERFACE_SEND_FREEZE:  ;process the freeze command
 	LDI		mpr, (1<<TXEN1) 
 	STS		UCSR1B, mpr     ;Enable TX ONLY (disable RX)
 
-MAIN_INTERFACE_SEND_FREEZE_LOOP:
-	LDS		mpr, UCSR1A
-	SBRS	mpr, UDRE1
-	rjmp	MAIN_INTERFACE_SEND_FREEZE_LOOP
-
-	LDI		mpr, targetRobotID
-
-	STS		UDR1, mpr
-
 MAIN_INTERFACE_SEND_FREEZE_LOOP2:
 	LDS		mpr, UCSR1A
 	SBRS	mpr, UDRE1
 	rjmp	MAIN_INTERFACE_SEND_FREEZE_LOOP2
 
 	;Actually send command
-	LDI		mpr, $8F		;By convention, all zeros is an "all robot"
+	LDI		mpr, $FF		;By convention, all zeros is an "all robot"
 							;freeze command
+	STS		UDR1, mpr
+
+MAIN_INTERFACE_SEND_FREEZE_LOOP:
+	LDS		mpr, UCSR1A
+	SBRS	mpr, UDRE1
+	rjmp	MAIN_INTERFACE_SEND_FREEZE_LOOP
+
+	;Send the targetRobot ID
+	LDI		mpr, targetRobotID
 	STS		UDR1, mpr
 
 	;We don't want to send freeze forever, so load the previous command and proceess
@@ -376,6 +380,7 @@ MAIN_RECIEVER:
     jmp MAIN
 
 
+;USART Recieved Interrupt
 
 ISR_RX_COMPLETE:
 	PUSH	mpr
