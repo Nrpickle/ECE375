@@ -1,6 +1,6 @@
 ;***********************************************************
 ;*
-;*	Lab 7 Timer/Counter
+;*	Lab 7 Remotely Operated Vehicle
 ;*
 ;*	Implements a remote control feature for the TekBot!
 ;*
@@ -72,9 +72,9 @@
 ;Note: All three configurations require all 3 IDs to be defined, for reasons.
 
 ;Configuration for Remote
-.equ	RemoteTargetId = $27 ;0b00100111
-.equ	DeviceID = $47
-.equ	targetRobotID = $23
+;.equ	RemoteTargetId = $27 ;0b00100111
+;.equ	DeviceID = $47
+;.equ	targetRobotID = $23
 
 ;Configuration for Robot1 (doesn't matter, just what I used)
 ;.equ	RemoteTargetId = $27 ;0b00100111
@@ -82,9 +82,9 @@
 ;.equ	targetRobotId = $23
 
 ;Configuration for Robot2
-;.equ	RemoteTargetId = $27 ;0b00100111
-;.equ	DeviceID = $23
-;.equ	targetRobotId = $22
+.equ	RemoteTargetId = $27 ;0b00100111
+.equ	DeviceID = $23
+.equ	targetRobotId = $22
 
 
 ;01010101
@@ -156,7 +156,6 @@ INIT:
 		LDI		mpr, cmd_forward
 		MOV		previousActionCode, mpr		;Store the forward command in the previous 
 											;action code
-
 		;Load 3 lives into 'da computer
 		LDI		mpr, 3
 		MOV		lifeCounter, mpr
@@ -289,7 +288,7 @@ MAIN_INTERFACE:
 ; BEGIN OF MAIN_SKIP_FREEZE
 ; ----------------------------
 
-;This handles 
+;This handles the freeze commands. 
 
 MAIN_SKIP_FREEZE:
 
@@ -298,12 +297,11 @@ MAIN_SKIP_FREEZE:
 	CPI		mpr, cmd_freeze				;If the command recieved was the freeze command,
 	BREQ	MAIN_INTERFACE_SEND_FREEZE  ;branch to the send freeze command branch
 	;Else, we need to output to the motors
-
+	
 	LSL		mpr						;Rotate left to get an actual motor command
 	OUT		PORTB, mpr				;Output actual motor command to the motors
 	MOV		previousMotorCommand, mpr	;Store this value into our storage register
 	MOV		previousActionCode, rx_actioncode
-
 
 	rjmp	MAIN_INTERFACE ;Return to top of program
 
@@ -535,6 +533,4 @@ HitLeft:
 		pop		waitcnt		; Restore wait register
 		pop		mpr		; Restore mpr
 		ret				; Return from subroutine
-
-
 
