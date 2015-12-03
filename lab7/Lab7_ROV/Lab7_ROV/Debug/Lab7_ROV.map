@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.1.57  C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm Wed Dec 02 14:50:37 2015
+AVRASM ver. 2.1.57  C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm Wed Dec 02 18:02:52 2015
 
 
 EQU  SIGNATURE_000 0000001e
@@ -900,8 +900,8 @@ EQU  TurnR        00000040
 EQU  TurnL        00000020
 EQU  Halt         00000090
 EQU  RemoteTargetId 00000027
-EQU  DeviceID     00000047
-EQU  targetRobotID 00000023
+EQU  DeviceID     00000023
+EQU  targetRobotId 00000022
 CSEG INIT         00000046
 CSEG ISR_RX_COMPLETE 000000e8
 CSEG MAIN         00000066

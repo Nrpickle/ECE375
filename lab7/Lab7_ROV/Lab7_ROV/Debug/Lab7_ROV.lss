@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.1.57  C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm Wed Dec 02 14:50:37 2015
+AVRASM ver. 2.1.57  C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm Wed Dec 02 18:02:52 2015
 
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\avrasm\inc\m128def.inc'
 C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm(20): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\avrasm\inc\m128def.inc'
@@ -1224,7 +1224,7 @@ C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm(20): 
                  ; ***** END OF FILE ******************************************************
                  
                  ;*
-                 ;*	Lab 7 Timer/Counter
+                 ;*	Lab 7 Remotely Operated Vehicle
                  ;*
                  ;*	Implements a remote control feature for the TekBot!
                  ;*
@@ -1339,9 +1339,9 @@ C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm(20): 
                  ;Note: All three configurations require all 3 IDs to be defined, for reasons.
                  
                  ;Configuration for Remote
-                 .equ	RemoteTargetId = $27 ;0b00100111
-                 .equ	DeviceID = $47
-                 .equ	targetRobotID = $23
+                 ;.equ	RemoteTargetId = $27 ;0b00100111
+                 ;.equ	DeviceID = $47
+                 ;.equ	targetRobotID = $23
                  
                  ;Configuration for Robot1 (doesn't matter, just what I used)
                  ;.equ	RemoteTargetId = $27 ;0b00100111
@@ -1349,9 +1349,9 @@ C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm(20): 
                  ;.equ	targetRobotId = $23
                  
                  ;Configuration for Robot2
-                 ;.equ	RemoteTargetId = $27 ;0b00100111
-                 ;.equ	DeviceID = $23
-                 ;.equ	targetRobotId = $22
+                 .equ	RemoteTargetId = $27 ;0b00100111
+                 .equ	DeviceID = $23
+                 .equ	targetRobotId = $22
                  
                  
                  ;01010101
@@ -1410,7 +1410,7 @@ C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm(20): 
 000058 9300 0098 		STS		UBRR1H, mpr
                  
                  		;Initialize the rx registers with a valid move forward command
-00005a e407      		LDI		mpr, DeviceId
+00005a e203      		LDI		mpr, DeviceId
 00005b 2e90      		MOV		rx_deviceid_temp, mpr
 00005c eb00      		LDI		mpr, cmd_forward
 00005d 2ea0      		MOV		rx_actioncode_temp, mpr
@@ -1423,7 +1423,6 @@ C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm(20): 
 000060 eb00      		LDI		mpr, cmd_forward
 000061 2e80      		MOV		previousActionCode, mpr		;Store the forward command in the previous 
                  											;action code
-                 
                  		;Load 3 lives into 'da computer
 000062 e003      		LDI		mpr, 3
 000063 2eb0      		MOV		lifeCounter, mpr
@@ -1435,7 +1434,7 @@ C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm(20): 
                  
                  MAIN:
                  	;Determine where in execution code to send robot (this allows all of the code to use the same file
-000066 e407      	LDI		mpr, DeviceID
+000066 e203      	LDI		mpr, DeviceID
 000067 fd06      	SBRC	mpr, 6  ;Check bit 6 to see if device is a remote
 000068 c006      	rjmp	MAIN_REMOTE
 000069 fd05      	SBRC	mpr, 5  ;Check bit 5 to see if device is an interface robot
@@ -1538,7 +1537,7 @@ C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm(20): 
                  	;BREQ	MAIN_INTERFACE_RECEIVE_FREEZE
                  
                  	;Check if "my" id has been recieved
-0000a4 e407      	LDI		mpr, DeviceID
+0000a4 e203      	LDI		mpr, DeviceID
 0000a5 1650      	CP		rx_deviceid, mpr	;Compare the recieved device ID to the current id
                  								;if it doesn't match, then restart this part of the
 0000a6 f799      	BRNE	MAIN_INTERFACE		;program
@@ -1556,7 +1555,7 @@ C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm(20): 
                  ; BEGIN OF MAIN_SKIP_FREEZE
                  ; ----------------------------
                  
-                 ;This handles 
+                 ;This handles the freeze commands. 
                  
                  MAIN_SKIP_FREEZE:
                  
@@ -1565,12 +1564,11 @@ C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm(20): 
 0000ac 3f08      	CPI		mpr, cmd_freeze				;If the command recieved was the freeze command,
 0000ad f0b1      	BREQ	MAIN_INTERFACE_SEND_FREEZE  ;branch to the send freeze command branch
                  	;Else, we need to output to the motors
-                 
+                 	
 0000ae 0f00      	LSL		mpr						;Rotate left to get an actual motor command
 0000af bb08      	OUT		PORTB, mpr				;Output actual motor command to the motors
 0000b0 2e70      	MOV		previousMotorCommand, mpr	;Store this value into our storage register
 0000b1 2c86      	MOV		previousActionCode, rx_actioncode
-                 
                  
 0000b2 cfe7      	rjmp	MAIN_INTERFACE ;Return to top of program
                  
@@ -1600,7 +1598,7 @@ C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm(20): 
                  
                  	;Output previously valid motor command to the freeze
 0000be 2ca8      	MOV		rx_actioncode_temp, previousActionCode
-0000bf e407      	LDI		mpr, DeviceID
+0000bf e203      	LDI		mpr, DeviceID
 0000c0 2e90      	MOV		rx_deviceid_temp, mpr
                  
 0000c1 9478      	SEI		;Return interrupts to normal operation
@@ -1646,13 +1644,13 @@ C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm(20): 
 0000d2 cffc      	rjmp	MAIN_INTERFACE_SEND_FREEZE_LOOP
                  
                  	;Send the targetRobot ID
-0000d3 e203      	LDI		mpr, targetRobotID
+0000d3 e202      	LDI		mpr, targetRobotID
 0000d4 9300 009c 	STS		UDR1, mpr
                  
                  	;We don't want to send freeze forever, so load the previous command and proceess
                  	;it the next iteration through MAIN_INTERFACE
 0000d6 2ca8      	MOV		rx_actioncode_temp, previousActionCode
-0000d7 e407      	LDI		mpr, DeviceID
+0000d7 e203      	LDI		mpr, DeviceID
 0000d8 2e90      	MOV		rx_deviceid_temp, mpr
                  	
 0000d9 e104      	LDI		mpr, robotWaitTime
@@ -1802,8 +1800,6 @@ C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm(20): 
 00012a 912f      		pop		waitcnt		; Restore wait register
 00012b 910f      		pop		mpr		; Restore mpr
 00012c 9508      		ret				; Return from subroutine
-                 
-                 
                  
 
 

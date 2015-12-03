@@ -24,27 +24,27 @@
  </OUTPUT_FILES>
  <LABELS>
   <INIT><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>112</LINE></INIT>
-  <ISR_RX_COMPLETE><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>419</LINE></ISR_RX_COMPLETE>
-  <MAIN><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>169</LINE></MAIN>
-  <MAIN_REMOTE><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>184</LINE></MAIN_REMOTE>
-  <MAIN_INTERFACE><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>251</LINE></MAIN_INTERFACE>
-  <MAIN_RECIEVER><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>409</LINE></MAIN_RECIEVER>
-  <MAIN_REMOTE_LOOP1><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>220</LINE></MAIN_REMOTE_LOOP1>
-  <MAIN_REMOTE_LOOP2><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>230</LINE></MAIN_REMOTE_LOOP2>
-  <Wait><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>448</LINE></Wait>
-  <HitLeft><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>508</LINE></HitLeft>
-  <HitRight><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>472</LINE></HitRight>
-  <MAIN_SKIP_FREEZE><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>294</LINE></MAIN_SKIP_FREEZE>
-  <MAIN_INTERFACE_RECEIVE_FREEZE><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>317</LINE></MAIN_INTERFACE_RECEIVE_FREEZE>
-  <MAIN_INTERFACE_SEND_FREEZE><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>359</LINE></MAIN_INTERFACE_SEND_FREEZE>
-  <ULTIMATE_DEATH><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>349</LINE></ULTIMATE_DEATH>
-  <MAIN_INTERFACE_SEND_FREEZE_LOOP2><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>366</LINE></MAIN_INTERFACE_SEND_FREEZE_LOOP2>
-  <MAIN_INTERFACE_SEND_FREEZE_LOOP><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>376</LINE></MAIN_INTERFACE_SEND_FREEZE_LOOP>
-  <DeviceIDLoad><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>427</LINE></DeviceIDLoad>
-  <ActionCodeLoad><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>430</LINE></ActionCodeLoad>
-  <ISR_RX_END><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>435</LINE></ISR_RX_END>
-  <Loop><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>453</LINE></Loop>
-  <OLoop><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>454</LINE></OLoop>
-  <ILoop><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>455</LINE></ILoop>
+  <ISR_RX_COMPLETE><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>417</LINE></ISR_RX_COMPLETE>
+  <MAIN><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>168</LINE></MAIN>
+  <MAIN_REMOTE><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>183</LINE></MAIN_REMOTE>
+  <MAIN_INTERFACE><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>250</LINE></MAIN_INTERFACE>
+  <MAIN_RECIEVER><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>407</LINE></MAIN_RECIEVER>
+  <MAIN_REMOTE_LOOP1><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>219</LINE></MAIN_REMOTE_LOOP1>
+  <MAIN_REMOTE_LOOP2><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>229</LINE></MAIN_REMOTE_LOOP2>
+  <Wait><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>446</LINE></Wait>
+  <HitLeft><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>506</LINE></HitLeft>
+  <HitRight><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>470</LINE></HitRight>
+  <MAIN_SKIP_FREEZE><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>293</LINE></MAIN_SKIP_FREEZE>
+  <MAIN_INTERFACE_RECEIVE_FREEZE><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>315</LINE></MAIN_INTERFACE_RECEIVE_FREEZE>
+  <MAIN_INTERFACE_SEND_FREEZE><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>357</LINE></MAIN_INTERFACE_SEND_FREEZE>
+  <ULTIMATE_DEATH><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>347</LINE></ULTIMATE_DEATH>
+  <MAIN_INTERFACE_SEND_FREEZE_LOOP2><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>364</LINE></MAIN_INTERFACE_SEND_FREEZE_LOOP2>
+  <MAIN_INTERFACE_SEND_FREEZE_LOOP><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>374</LINE></MAIN_INTERFACE_SEND_FREEZE_LOOP>
+  <DeviceIDLoad><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>425</LINE></DeviceIDLoad>
+  <ActionCodeLoad><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>428</LINE></ActionCodeLoad>
+  <ISR_RX_END><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>433</LINE></ISR_RX_END>
+  <Loop><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>451</LINE></Loop>
+  <OLoop><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>452</LINE></OLoop>
+  <ILoop><FILE>C:\Users\nrpic_000\Documents\GitHub\ECE375\lab7\Lab7_ROV\Lab7_ROV\main.asm</FILE><LINE>453</LINE></ILoop>
  </LABELS>
 </ASSEMBLER_INFO>
